@@ -143,12 +143,12 @@ class HomeState extends State<Home> {
         ), 
         //拨打电话靠右 
         new ClipRRect(
-          borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+          borderRadius: new BorderRadius.all(new Radius.circular(5.0)),          
           child:         
             new Container(
             color: Color(0xFFed414a), 
             height: 25.0,
-            margin: EdgeInsets.fromLTRB(0.0, 0.0, 6.0, 0.0), 
+            //margin: EdgeInsets.fromLTRB(0.0, 0.0, 3.0, 0.0), 
             padding: EdgeInsets.all(2.0),        
             child:
             new Row(
