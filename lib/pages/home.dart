@@ -163,16 +163,106 @@ class HomeState extends State<Home> {
         
       ],
     );
+    var contentRow = new Row(
+      children: <Widget>[
+        new Container(
+          padding: new EdgeInsets.all(5.0),
+          height: 80.0,
+          width: MediaQuery.of(context).size.width-10,
+          child: new Text('提供了多种按钮Widget如RaisedButton、FlatButton、OutlineButton等，它们都是直接或间接对RawMaterialButton的包装定制，所以他们大多数属性都和RawMaterialButton一样。在介绍各个按钮时我们先介绍其默认外观，而按钮的外观大都可以通过属性来自定义，我们在后面统一介绍这些属性。另外，所有Material 库中的按钮都有如下相同点',maxLines: 3,overflow: TextOverflow.ellipsis),
+        )
+        
+      ],
+    );
+    var picsRow = new Row(
+      children: <Widget>[        
+        new Container(
+          color: Colors.white,
+          height: 300.0,          
+          width: MediaQuery.of(context).size.width-10,
+          child:                                      
+            new GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 3.0,
+              mainAxisSpacing: 3.0
+              ), 
+              itemCount: 6,
+              padding: const EdgeInsets.all(3.0),
+              itemBuilder: (BuildContext context,int index){
+                return picGridItem(context,index);
+              }
+            )    
+                      
+        )
+      ],
+    );
+    var timeRow = new Row(children: <Widget>[
+      Text('1小时前发布',style: TextStyle(color: Colors.grey,fontSize: 11.0))
+    ]);
+    var addressRow = new Row(
+      children: <Widget>[
+        new Icon(Icons.location_on,color: Colors.redAccent,size: 14.0,),
+        Text('杭州市紫霞街互联网创新创业园',style: TextStyle(color: Colors.blue,fontSize: 12.0),)
+      ],
+    );
+    var likeRow = new Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.comment,color: Colors.grey,size: 16.0),
+            Text('32',style: TextStyle(color: Colors.grey))
+          ],
+        ),
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.thumb_up,color: Colors.grey,size: 16.0),
+            Text('32',style: TextStyle(color: Colors.grey))
+          ],
+        ),
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.share,color: Colors.grey,size: 16.0),
+            Text('32',style: TextStyle(color: Colors.grey))
+          ],
+        )    
+      ],
+    );
     return new Container(
       color: Colors.white,
-      height: 200.0,
+      //height: 500.0,
       padding: new EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 5.0),
       child: new Column(
         children: <Widget>[
+          homeSliver(),
           authorRow,
-          homeSliver()
+          listItemSliver(),
+          contentRow,
+          listItemSliver(),
+          picsRow,
+          listItemSliver(),
+          timeRow,
+          addressRow,
+          listItemSliver(),
+          likeRow,
         ],
       ),
+    );
+  }
+  //九宫图item
+  Widget picGridItem(BuildContext context, int index) {
+    return new Container(
+      child: 
+      new ClipRRect(
+        borderRadius: new BorderRadius.all(new Radius.circular(30.0)),
+        //borderRadius: new BorderRadius.circular(50.0),
+        child: new Image.network('http://img.yms.cn/UpLoad/Thread/20191/5/7578_201901051001195616.jpg',width: 100.0,height: 100.0,),
+        //child: new Image.network('http://img.yms.cn/ad/ad_banner_mahai.jpg')
+      )      
     );
   }
   //图标navItem
@@ -222,6 +312,15 @@ class HomeState extends State<Home> {
     return  new Container(
         width: MediaQuery.of(context).size.width,
         height: 5.0,
+        color: Colors.white,
+        child: new Container(color: Colors.black12),        
+      );    
+  }
+  //listItem分割
+  Widget listItemSliver() {
+    return  new Container(
+        width: MediaQuery.of(context).size.width,
+        height: 1.0,
         color: Colors.white,
         child: new Container(color: Colors.black12),        
       );    
@@ -303,21 +402,9 @@ class HomeState extends State<Home> {
                           
                         ),
                       ),
-                      homeSliver(),  
-                      new SizedBox(    
-                        height: 500.0,                    
-                        child:new Container(
-                          color: Colors.white,
-                          child: new ListView.builder(
-                            itemCount: 5,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {                              
-                              return listItem(context,index);                              
-                            },
-                          )
-                        )
-                      ),                      
+                                     
                       homeSliver(),                          
+                      //grid tab导航
                       new SizedBox(                        
                         height: 100.0,
                         child: Container(
@@ -379,8 +466,29 @@ class HomeState extends State<Home> {
                             )
                           ],
                         )                         
-                      ),
-                      homeSliver(),                     
+                      ),  
+                       homeSliver(),                      
+                      //listitem列表展示                                        
+                      new SizedBox(    
+                        height: 3000.0,
+                        width: MediaQuery.of(context).size.width,                      
+                        child:new Container(
+                          color: Colors.white,
+                          child: 
+                          //new Text('dd')
+                          
+                          new ListView.builder(
+                            itemCount: 5,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context, int index) {                              
+                              //return new Text('ddd');
+                              return listItem(context,index);                              
+                            },
+                          )
+                          
+                        )
+                      )
+                                                                
                     ],
                   )
               )
