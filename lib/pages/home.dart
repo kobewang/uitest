@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_vertical_marquee/flutter_vertical_marquee.dart';
+import 'package:share/share.dart';
 class Home extends StatefulWidget {
   @override
   HomeState createState() => HomeState();
@@ -362,12 +363,39 @@ class HomeState extends State<Home> {
     );
     return listWidget;
   }
+  Widget optionWidget() {
+    return new PopupMenuButton(
+      onSelected: 
+      (String value){
+        print(value);
+        setState(() {
+          Share.share('check out my website https://example.com');
+        });
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
+        new PopupMenuItem(value: "share",child: Text('分享')),
+        new PopupMenuItem(value: "pyq",child: Text('朋友圈')),
+        new PopupMenuItem(value: "copy",child: Text('复制')),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {            
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
-        automaticallyImplyLeading: false, //是否带返回leading箭头
+        title: Container(
+          child: new Row(
+            children: <Widget>[
+              Expanded(child: new Text('自定义Title',maxLines: 1,overflow: TextOverflow.ellipsis)),
+
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          optionWidget()
+        ],
+        automaticallyImplyLeading: true, //是否带返回leading箭头
       ) ,
       body:  new Column(
         crossAxisAlignment: CrossAxisAlignment.stretch, //头部折叠
