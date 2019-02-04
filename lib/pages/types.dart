@@ -57,7 +57,7 @@ class TypesPageState extends State<TypesPage> {
             new Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                RightTypeTop(),
+                RightTypeTop(isGroup: true,),
                 Expanded (child: 
                   RightGroup(isGroup: true)
                 )

@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:uitest/dao/typesDao.dart';
+import 'package:uitest/model/groupInfo.dart';
+import 'package:uitest/model/typeInfo.dart';
 import 'package:uitest/utils/tmtypes.dart';
 import 'package:uitest/widgets/leftTypeList.dart';
 import 'package:uitest/widgets/rightGroup.dart';
@@ -8,30 +11,41 @@ import 'package:uitest/widgets/rightTypeTop.dart';
 ///
 /// auth:wyj date:20190131
 class GroupesPage extends StatefulWidget {
-  int typeId;
-  GroupesPage({Key key,this.typeId}) : super(key:key);
+  TypeInfo typeInfo;
+  String groupId;
+  GroupesPage({Key key,this.typeInfo,this.groupId}) : super(key:key);
   @override
   createState ()=> GroupesPageState();
 }
 class GroupesPageState extends State<GroupesPage> {
   List leftTypeList=[];
+  String groupHeadStr="";
   @override
   void initState() {
     super.initState();
     setState(() {
-      getTypes();      
+      getTypes();    
     });
-    
+        
   }
-  void getTypes() {
-    TmTypes.TYPES.forEach((item){
-      if( int.parse(item['id'].toString()) > 0 ) {
-      if( int.parse(item['id'].toString()) == 1 )
-        item['checked']='on';
-      else
-        item['checked']='off';
-      leftTypeList.add(item);
+  void getTypes() async{
+    /*
+    var result= await TypesDao.GroupList(widget.typeId);
+    List<GroupInfo> list = result.data;
+    print(list.length);
+    list.forEach((item){
+      print(item.name);
+      var typeItem={'id':item.id.toString(),'title':item.name,'checked':'on'};
+      leftTypeList.add(typeItem);
+    });
+    */
+    widget.typeInfo.groupList.forEach((item){
+      var typeItem={'title':item.id,'checked':'off'};
+      if(widget.groupId==item.id){
+        typeItem['checked']='on';
+        groupHeadStr='【'+item.id+'】'+item.name;
       }
+      leftTypeList.add(typeItem);
     });
   }
   @override
@@ -45,7 +59,7 @@ class GroupesPageState extends State<GroupesPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           //左侧list
-          LeftTypeList(isType: true,leftList: leftTypeList),
+          LeftTypeList(isType: false,leftList: leftTypeList),
           //右侧list
           Expanded(child: 
           Container(
@@ -54,9 +68,9 @@ class GroupesPageState extends State<GroupesPage> {
             new Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                RightTypeTop(),
+                RightTypeTop(isGroup: false, typeInfo: widget.typeInfo,),
                 Expanded (child: 
-                  RightGroup()
+                  RightGroup(isGroup: false,headStr:groupHeadStr)
                 )
               ],
             )

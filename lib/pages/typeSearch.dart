@@ -70,20 +70,7 @@ class TypeSearchPageState extends State<TypeSearchPage> {
       scrollDirection: Axis.vertical,
       itemCount: 10,
       itemBuilder: (context,index) {
-        //return Text('【0101】 012345687 的飞洒地方的飞洒发斯蒂芬发大水发斯蒂芬的说法是的范德萨');
-        /*
-        return new Container(
-          color: Colors.grey[100],
-          padding: EdgeInsets.all(5.0),
-          child: 
-          index==0? 
-          Container(child: Text('第05类 化学化工'), color: Colors.white)
-          :
-          Container(child: 
-            Text('【0101】 012345687 的飞洒地方的飞洒发斯蒂芬发大水发斯蒂芬的说法是的范德萨'),
-          )
-        );
-        */
+      
         return 
         Container(
           color:  Colors.white,
@@ -97,6 +84,72 @@ class TypeSearchPageState extends State<TypeSearchPage> {
         );
       },
     );
+  }
+  //自定义关键字加红text
+  Widget mySpannedText(String line ,String key){
+    var index=line.indexOf(key);
+    //开头
+    if(index==0){
+      return Text.rich(
+        new TextSpan(
+          text: key,
+          style: new TextStyle(
+            color: Colors.red,
+            fontSize: 14.0,
+            decoration: TextDecoration.none,
+          ),
+          children: <TextSpan>[
+              new TextSpan(
+                text: line.substring(key.length,line.length),
+                style: TextStyle(color: Colors.black)
+              )
+          ]
+        )
+      );
+    }
+    //句尾
+    else if(index>0&&index+key.length==line.length)
+    {
+      return Text.rich(
+        new TextSpan(
+          text: line.substring(0,index),
+          style: new TextStyle(
+            color: Colors.black,
+            fontSize: 14.0,
+            decoration: TextDecoration.none,
+          ),
+          children: <TextSpan>[
+              new TextSpan(
+                text: key,
+                style: TextStyle(color: Colors.red)
+              )
+          ]
+        )
+      );
+    }
+    //句中
+    else {
+        return Text.rich(
+        new TextSpan(
+          text: line.substring(0,index),
+          style: new TextStyle(
+            color: Colors.black,
+            fontSize: 14.0,
+            decoration: TextDecoration.none,
+          ),
+          children: <TextSpan>[
+              new TextSpan(
+                text: key,
+                style: TextStyle(color: Colors.red)
+              ),
+               new TextSpan(
+                text: line.substring(index+key.length,line.length),
+                style: TextStyle(color: Colors.black)
+              )
+          ]
+        )
+      );
+    }
   }
 
    List<Widget> listDetail(index)  {
@@ -125,48 +178,8 @@ class TypeSearchPageState extends State<TypeSearchPage> {
              children: <Widget>[
                Expanded(child: 
                Container(
-                 //margin: EdgeInsets.only(top: 3.0),
-                 //child: Text('【0101】 012345687 的飞洒地方的飞洒发斯蒂芬发大水发斯蒂芬的说法是的范德萨',maxLines: 3,overflow: TextOverflow.ellipsis,), 
-                 //child: Html(data: '【0101】 012345687 的飞洒地方的飞洒发斯蒂芬<span color="#FF0000">化学化工</span>斯蒂芬的说法是的范德萨',),
-                 child: new Text.rich(
-          new TextSpan(
-            text: '【0101】 012345687 的飞洒地方的飞洒发斯蒂芬',
-            style: new TextStyle(
-              color: Colors.black,
-              fontSize: 14.0,
-              decoration: TextDecoration.none,
-            ),
-            children: <TextSpan>[
-              new TextSpan(
-                text: '化学化工',
-                style: TextStyle(color: Colors.red)
-              ),
-         
-              new TextSpan(
-                text: '拼接3',
-              ),
-              new TextSpan(
-                text: '拼接4',
-              ),
-              new TextSpan(
-                text: '拼接5',
-              ),
-              new TextSpan(
-                text: '拼接6',
-              ),
-            ])),
-            
-          
-                 /*
-                 child:new Row(
-                   mainAxisAlignment: MainAxisAlignment.start,
-                   children: <Widget>[
-                     Text('【0101】 012345687 的飞洒地方的飞洒发'),
-                     Text('化学化工',style: TextStyle(color: Colors.red)),
-                     Text('dfdsfdsfds的范德萨发'),
-                   ],
-                 ),
-                 */
+                 child: 
+                  mySpannedText('【0101】 012345687 的飞洒地方的飞','飞'),          
                  color: Colors.grey[200]
                  )
                )

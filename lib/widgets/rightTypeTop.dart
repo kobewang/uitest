@@ -7,17 +7,22 @@ import 'package:uitest/utils/utils.dart';
 /// 
 /// auth:wyj date:20190131
 class RightTypeTop extends StatefulWidget {
+  TypeInfo typeInfo;
+  bool isGroup = true;
+  RightTypeTop({Key key, this.isGroup, this.typeInfo}):super(key:key);
   @override
   createState ()=> RightTypeTopState();
 }
 class RightTypeTopState extends State<RightTypeTop> {
-  TypeInfo typeInfo =new TypeInfo(id: 1,name: '商标分类',summary: '分类详细描述',groupList: []);
-
+  TypeInfo typeInfo =new TypeInfo(id: 1,name: '化学原料',summary: '用于工业、科学、摄影、农业、园艺和林业的化学品；未加工人造合成树脂；未加工塑料物质；肥料；灭火用合成物；淬火和焊接用制剂；保存食品用化学品；鞣料；工业用粘合剂。',groupList: []);
   @override
   void initState() {
-    eventBus.on<TypeSelectEvent>().listen((TypeSelectEvent data) =>
-      show(data.typeInfo)
-    );
+    super.initState();
+    if(widget.isGroup == false)
+      this.typeInfo = widget.typeInfo;
+      eventBus.on<TypeSelectEvent>().listen((TypeSelectEvent data) =>
+        show(data.typeInfo)
+      );
   }
   void show(TypeInfo info) {
     setState(() {

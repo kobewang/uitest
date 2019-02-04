@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:uitest/dao/DataResult.dart';
+import 'package:uitest/model/goodsInfo.dart';
 import 'package:uitest/model/groupInfo.dart';
 import 'package:uitest/model/typeInfo.dart';
 import 'package:uitest/net/api.dart';
 
 class TypesDao {
-  static Detail(int typeId) async {
+  static detail(int typeId) async {
     var params = {
       "Type": typeId
     };
@@ -14,14 +15,14 @@ class TypesDao {
     if (res != null && res.result && res.data.length > 0) {
       var data = res.data;
       TypeInfo typeInfo = TypeInfo.fromJson(data['Data']);
-      var resGroup = await GroupList(typeId);
+      var resGroup = await groupList(typeId);
       typeInfo.groupList = resGroup.data;
       return new DataResult(typeInfo, true);
     }
     return new DataResult(null,false);
   }
 
-  static GroupList(int typeId) async {
+  static groupList(int typeId) async {
     var params = {
       "Type": typeId,
       "Key": ''
@@ -30,11 +31,29 @@ class TypesDao {
     List<GroupInfo> groupList = new List<GroupInfo>();
     if (res != null && res.result && res.data.length > 0) {
       var data = res.data;
+      print('res.data:${res.data}');
       for(var i=0 ; i<data['Data']['List'].length; i++) {
         GroupInfo groupInfo = GroupInfo.fromJson(data['Data']['List'][i]);
         groupList.add(groupInfo);
       }
     }
     return new DataResult(groupList, true);
+  }
+
+  static goodsList(String groupId) async {
+    var params = {
+      "GroupId": groupId,
+      "Key": ''
+    };
+     var res = await HttpManager.netFetch(HttpManager.API_GOODS_LIST, params, null, null);
+    List<GoodsInfo> goodsList = new List<GoodsInfo>();
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      for(var i=0 ; i<data['Data']['List'].length; i++) {
+        GoodsInfo goodsInfo = GoodsInfo.fromJson(data['Data']['List'][i]);
+        goodsList.add(goodsInfo);
+      }
+    }
+    return new DataResult(goodsList, true);
   }
 }

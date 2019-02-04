@@ -20,12 +20,19 @@ void onCheckList(int index) {
     });
     listNew[index]['checked']='on';
     widget.leftList=listNew;
-    _getTypeDetail(widget.leftList[index]['id']);
+    _getTypeDetail(widget.isType? widget.leftList[index]['id'].toString(): widget.leftList[index]['title']);
   }
 
-  _getTypeDetail(int typeId) async{
-    var res = await TypesDao.Detail(typeId);
-    eventBus.fire(new TypeSelectEvent(res.data));
+  _getTypeDetail(String typeId) async{
+    if(widget.isType) {
+      //分类
+      var res = await TypesDao.detail(int.parse(typeId));
+      eventBus.fire(new TypeSelectEvent(res.data));
+    } else {
+      //分组
+      var res = await TypesDao.goodsList(typeId);
+      eventBus.fire(new GroupSelectEvent(res.data));
+    }
   }
   Widget listItem(context,index) {
     var showText = widget.isType? '${Utils.FormateType(index+1)}${widget.leftList[index]['title']}':'${widget.leftList[index]['title']}';

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:uitest/dao/typesDao.dart';
+import 'package:uitest/model/goodsInfo.dart';
 import 'package:uitest/model/typeInfo.dart';
 import 'package:uitest/pages/groupes.dart';
 import 'package:uitest/utils/eventBus.dart';
@@ -9,22 +11,56 @@ import 'package:uitest/utils/eventBus.dart';
 /// auth:wyj date:20190131
 class RightGroup extends StatefulWidget {
   bool isGroup = true;
-  RightGroup({Key key,this.isGroup}):super(key:key);
+  String headStr = '';
+  String groupId = "";
+  RightGroup({Key key,this.isGroup,this.headStr,this.groupId}):super(key:key);
   @override
   createState ()=> RightGroupState();
 }
 class RightGroupState extends State<RightGroup> {
   TypeInfo typeInfo =new TypeInfo(id: 1,name: '商标分类',summary: '分类详细描述',groupList: []);
+  List<GoodsInfo> goodsList;
+
+  void firstType() async {
+    var res = await TypesDao.detail(1);
+      setState(() {
+        typeInfo = res.data;
+      });
+  }
+  void firstGroup() async {
+    var res = await TypesDao.goodsList(widget.groupId);
+    setState(() {
+      goodsList = res.data;
+    });
+  }
   @override
   void initState() {
-    eventBus.on<TypeSelectEvent>().listen((TypeSelectEvent data) =>
-      show(data.typeInfo)
-    );
+    super.initState();
+    if(widget.isGroup) {
+      firstType();
+      eventBus.on<TypeSelectEvent>().listen((TypeSelectEvent data) =>
+        show(data.typeInfo)
+      );
+    } else {
+      firstGroup();
+      eventBus.on<GroupSelectEvent>().listen((GroupSelectEvent data) =>
+        showGoodsList(data.goodsInfoList)
+      );
+    }
+  }
+  void showGoodsList(List<GoodsInfo> goodsInfoList) {
+    if(mounted) {
+      setState(() {
+        goodsList=goodsInfoList;
+      });
+    }
   }
   void show(TypeInfo info) {
+    if(mounted){
     setState(() {
       typeInfo = info;      
     });
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -46,7 +82,7 @@ class RightGroupState extends State<RightGroup> {
           child: 
           ListView.builder(
             scrollDirection: Axis.vertical,
-            itemCount: typeInfo.groupList.length+1,
+            itemCount: widget.isGroup? (typeInfo.groupList.length+1):(goodsList.length+1),
             itemBuilder: (context,index){
               if(index==0) {
                 return new Container(
@@ -54,13 +90,14 @@ class RightGroupState extends State<RightGroup> {
                   color: Colors.white,
                   child: new Column(
                     children: <Widget>[
-                      Text('分组信息',style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text( (widget.isGroup?'分组信息':widget.headStr),style: TextStyle(fontWeight: FontWeight.bold)),
                       Divider(color: Colors.grey,height: 1.0)
                     ],
                   )
-                  
                 );
               } else {
+                var groupId = widget.isGroup? typeInfo.groupList[index-1].id:goodsList[index-1].id;
+                var groupName = widget.isGroup?typeInfo.groupList[index-1].name:goodsList[index-1].typeName;
                 var item = new Container(
                   margin: EdgeInsets.only(bottom: 2.0),
                   color: Colors.white,
@@ -69,9 +106,9 @@ class RightGroupState extends State<RightGroup> {
                       new Row(
                         children: <Widget>[
                           Expanded(child: 
-                            Text('【${typeInfo.groupList[index-1].id}】${typeInfo.groupList[index-1].name}')
+                            Text(groupId==''? '$groupName':'【$groupId】$groupName')
                           ),
-                          Icon(Icons.arrow_right)
+                          widget.isGroup?(new Icon(Icons.arrow_right)):Container(height: 0.0,width: 0.0)
                         ],
                       ),
                       Divider(color: Colors.grey,height: 1.0)
@@ -82,7 +119,7 @@ class RightGroupState extends State<RightGroup> {
                   return GestureDetector(
                     child: item,
                     onTap: (){
-                          Navigator.of(context).push(new MaterialPageRoute(builder: (ctx) => new GroupesPage(typeId: typeInfo.id)));
+                          Navigator.of(context).push(new MaterialPageRoute(builder: (ctx) => new GroupesPage(typeInfo: typeInfo,groupId: groupId,)));
                     },
                   );
                 } else {
