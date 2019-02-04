@@ -19,7 +19,7 @@ class RightGroup extends StatefulWidget {
 }
 class RightGroupState extends State<RightGroup> {
   TypeInfo typeInfo =new TypeInfo(id: 1,name: '商标分类',summary: '分类详细描述',groupList: []);
-  List<GoodsInfo> goodsList;
+  List<GoodsInfo> goodsList = []; 
 
   void firstType() async {
     var res = await TypesDao.detail(1);
@@ -28,6 +28,7 @@ class RightGroupState extends State<RightGroup> {
       });
   }
   void firstGroup() async {
+    print('widget.groupId:${widget.groupId}');
     var res = await TypesDao.goodsList(widget.groupId);
     setState(() {
       goodsList = res.data;
@@ -119,7 +120,7 @@ class RightGroupState extends State<RightGroup> {
                   return GestureDetector(
                     child: item,
                     onTap: (){
-                          Navigator.of(context).push(new MaterialPageRoute(builder: (ctx) => new GroupesPage(typeInfo: typeInfo,groupId: groupId,)));
+                          Navigator.of(context).push(new MaterialPageRoute(builder: (ctx) => new GroupesPage(typeInfo: typeInfo,groupId: groupId)));
                     },
                   );
                 } else {

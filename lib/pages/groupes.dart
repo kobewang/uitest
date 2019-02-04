@@ -70,7 +70,7 @@ class GroupesPageState extends State<GroupesPage> {
               children: <Widget>[
                 RightTypeTop(isGroup: false, typeInfo: widget.typeInfo,),
                 Expanded (child: 
-                  RightGroup(isGroup: false,headStr:groupHeadStr)
+                  RightGroup(isGroup: false,headStr:groupHeadStr,groupId:widget.groupId)
                 )
               ],
             )

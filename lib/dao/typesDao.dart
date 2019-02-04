@@ -41,6 +41,7 @@ class TypesDao {
   }
 
   static goodsList(String groupId) async {
+     print('groupId:${groupId}');
     var params = {
       "GroupId": groupId,
       "Key": ''
