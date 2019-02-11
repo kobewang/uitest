@@ -8,8 +8,10 @@ class  HttpManager {
   static final String API_HOST = "https://api.yms.cn";
   ///分类详细
   static final String API_TYPE_DETAIL = API_HOST+"/tm/type/detail";
+  static final String API_GROUP_DETAIL = API_HOST+"/tm/group/detail";
   static final String API_GROUP_LIST = API_HOST+"/tm/group/list";
   static final String API_GOODS_LIST = API_HOST+"/tm/goods/list";
+  static final String API_GOODS_SEARCH = API_HOST+"/tm/goods/search";
   static netFetch(url,params,Map<String,String> header, Options option,{noTip = false}) async {
     Map<String,String> headers = new HashMap();
     if (header != null) {

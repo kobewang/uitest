@@ -7,6 +7,7 @@ import 'package:uitest/utils/tmtypes.dart';
 import 'package:uitest/widgets/leftTypeList.dart';
 import 'package:uitest/widgets/rightGroup.dart';
 import 'package:uitest/widgets/rightTypeTop.dart';
+import 'package:uitest/widgets/topTypeSearch.dart';
 /// 分组列表
 ///
 /// auth:wyj date:20190131
@@ -53,31 +54,34 @@ class GroupesPageState extends State<GroupesPage> {
     return Scaffold(
       backgroundColor: new Color.fromRGBO(255, 255, 254, 1.0),
       appBar:new AppBar(
-        title: Text('搜索'),
-      ),
-      body: new Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          //左侧list
-          LeftTypeList(isType: false,leftList: leftTypeList),
-          //右侧list
-          Expanded(child: 
-          Container(
-            margin: EdgeInsets.only(left: 15.0),
-            child: 
-            new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                RightTypeTop(isGroup: false, typeInfo: widget.typeInfo,),
-                Expanded (child: 
-                  RightGroup(isGroup: false,headStr:groupHeadStr,groupId:widget.groupId)
-                )
-              ],
-            )
-          )
-          )
-        ],
-      )
-    );
-  }
+        title: TopTypeSearch(),
+              ),
+              body: new Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  //左侧list
+                  LeftTypeList(isType: false,leftList: leftTypeList),
+                  //右侧list
+                  Expanded(child: 
+                  Container(
+                    margin: EdgeInsets.only(left: 15.0),
+                    child: 
+                    new Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        RightTypeTop(isGroup: false, typeInfo: widget.typeInfo,),
+                        Expanded (child: 
+                          RightGroup(isGroup: false,headStr:groupHeadStr,groupId:widget.groupId)
+                        )
+                      ],
+                    )
+                  )
+                  )
+                ],
+              )
+            );
+          }
+        }
+        
+        class TopTypesSearch {
 }

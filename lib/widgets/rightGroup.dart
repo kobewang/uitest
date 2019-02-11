@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uitest/dao/typesDao.dart';
 import 'package:uitest/model/goodsInfo.dart';
+import 'package:uitest/model/groupInfo.dart';
 import 'package:uitest/model/typeInfo.dart';
 import 'package:uitest/pages/groupes.dart';
 import 'package:uitest/utils/eventBus.dart';
@@ -45,14 +46,15 @@ class RightGroupState extends State<RightGroup> {
     } else {
       firstGroup();
       eventBus.on<GroupSelectEvent>().listen((GroupSelectEvent data) =>
-        showGoodsList(data.goodsInfoList)
+        showGoodsList(data.goodsInfoList,data.groupInfo)
       );
     }
   }
-  void showGoodsList(List<GoodsInfo> goodsInfoList) {
+  void showGoodsList(List<GoodsInfo> goodsInfoList,GroupInfo groupInfo) {
     if(mounted) {
       setState(() {
         goodsList=goodsInfoList;
+        widget.headStr='【${groupInfo.id}】${groupInfo.name}';
       });
     }
   }

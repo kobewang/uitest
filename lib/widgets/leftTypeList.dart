@@ -30,8 +30,9 @@ void onCheckList(int index) {
       eventBus.fire(new TypeSelectEvent(res.data));
     } else {
       //分组
-      var res = await TypesDao.goodsList(typeId);
-      eventBus.fire(new GroupSelectEvent(res.data));
+      var resGoods = await TypesDao.goodsList(typeId);
+      var resGroup= await TypesDao.groupDetail(typeId);
+      eventBus.fire(new GroupSelectEvent(resGoods.data,resGroup.data));
     }
   }
   Widget listItem(context,index) {

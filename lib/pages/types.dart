@@ -5,6 +5,7 @@ import 'package:uitest/utils/tmtypes.dart';
 import 'package:uitest/widgets/leftTypeList.dart';
 import 'package:uitest/widgets/rightGroup.dart';
 import 'package:uitest/widgets/rightTypeTop.dart';
+import 'package:uitest/widgets/topTypeSearch.dart';
 /// 商标分类表
 ///
 /// auth:wyj date:20190131
@@ -42,7 +43,7 @@ class TypesPageState extends State<TypesPage> {
     return Scaffold(
       backgroundColor: new Color.fromRGBO(255, 255, 254, 1.0),
       appBar:new AppBar(
-        title: Text('搜索'),
+        title: TopTypeSearch(),
       ),
          body: new Row(
         mainAxisAlignment: MainAxisAlignment.start,
