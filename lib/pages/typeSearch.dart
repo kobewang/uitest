@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:uitest/config/constants.dart';
 import 'package:uitest/dao/typesDao.dart';
+import 'package:uitest/local/localStorage.dart';
 import 'package:uitest/model/goodsSearchInfo.dart';
 //import 'package:flutter_html_textview/flutter_html_textview.dart';
 /// 商标类型搜索
@@ -13,17 +15,42 @@ class TypeSearchPage extends StatefulWidget {
 }
 class TypeSearchPageState extends State<TypeSearchPage> {
   String searchContent;
+  String historyWords = '';
   String keyWord;
   final TextEditingController controller = new TextEditingController();
   List<GoodsSearchInfo> listInfo =[];
   var isSearching = false;
   var isNoResult = false;
+  var isHideHistory = false;
+  //从本地库中读取历史
+  getHiswords() async {
+    historyWords = await LocalStorage.get(Constants.TYPE_SEARCH_HISTORY);
+  }
+
   void searchKey(String key)  async{
     var res = await TypesDao.goodsSearch(key);
     setState(() {
       listInfo = res.data;  
       isSearching = false;
+      isHideHistory = true;
       isNoResult = listInfo.length >0 ? false : true;
+      if(listInfo.length>0) {
+        String saveStr='';
+        LocalStorage.remove(Constants.TYPE_SEARCH_HISTORY);
+        var historyWords =  LocalStorage.get(Constants.TYPE_SEARCH_HISTORY);
+        if(historyWords == null) 
+          saveStr='';
+        else 
+         saveStr= historyWords.toString();
+        var listStr =  saveStr.split(',').map((item){print('item:$item'); return item;}).toList();
+        
+        if(!listStr.contains(key)){
+          saveStr=saveStr+','+key;
+          print('saveStr:$saveStr');
+          //LocalStorage.save(Constants.TYPE_SEARCH_HISTORY, saveStr);
+          LocalStorage.remove(Constants.TYPE_SEARCH_HISTORY);
+        }
+      }
     });
   }
   ///搜索行
@@ -57,7 +84,7 @@ class TypeSearchPageState extends State<TypeSearchPage> {
                       });
                     },
                     onSubmitted: (String content){
-                      searchContent='啤酒';
+                      searchContent='化学';
                       keyWord=searchContent;
                       setState(() {
                        isSearching = true; 
@@ -76,6 +103,7 @@ class TypeSearchPageState extends State<TypeSearchPage> {
                      listInfo =[];
                      isSearching=false;
                      isNoResult=false;
+                     isHideHistory = false;
                      searchContent = '';
                      controller.text = ''; 
                     });
@@ -88,6 +116,37 @@ class TypeSearchPageState extends State<TypeSearchPage> {
       );
   }
 
+  //搜索记录行
+  Widget historyRow()  {
+    getHiswords();
+    var arr= historyWords!=null?historyWords.split(','):[];
+    var widgetList =arr.map((item){ if(item!=null) return  historyText(item);}).toList();
+    return 
+      Wrap(
+        spacing: 2.0,//左右间距
+        runSpacing: 3.0,//上下间距
+        children:widgetList
+      );
+  }
+  //历史记录文本样式
+  Widget historyText(String text) {
+    return
+    GestureDetector(child: 
+      Chip(
+        label: Text(text),
+      ),
+      onTap: (){
+        controller.text=text;//输入框显示关键字
+        controller.selection=TextSelection.fromPosition(TextPosition(affinity: TextAffinity.downstream,offset: text.length));//光标定位
+        searchContent=text;
+        keyWord=text;
+        setState(() {
+          isSearching = true; 
+        });
+        searchKey(keyWord);
+      },
+    );
+  }
   //列表行
   Widget listRow() {
     return ListView.builder(
@@ -219,12 +278,13 @@ class TypeSearchPageState extends State<TypeSearchPage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(255, 255, 254, 1.0),
       appBar: new AppBar(
-        title: Text('商标搜索')
+        title: Text('商标分类分组搜索')
       ),
       body: new Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           searchRow(),
+          isHideHistory?Container(height: 0.0,width: 0.0):historyRow(),
           Expanded(child: isSearching?CupertinoActivityIndicator(): isNoResult? Text('未搜索到相关结果，请换个关键词试试',style: TextStyle(color: Colors.blue))  : listRow()) //菊花加载条
         ],
       ) 
