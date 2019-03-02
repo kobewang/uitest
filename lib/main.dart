@@ -5,6 +5,9 @@ import 'package:uitest/widgets/barOption.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:uitest/pages/types.dart';
 import 'package:uitest/pages/groupes.dart';
+import 'package:uitest/pages/regtm.dart';
+import 'package:uitest/pages/drawer.dart';
+import 'package:uitest/pages/listorder.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,7 +21,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       //home: MyHomePage(title: 'Flutter Demo Home Page'),
-      home: TypesPage(),
+      //home: TypesPage(),
+      //home: ListOrderPage(),
+      home:DrawerPage()
       //home: TypeSearchPage(),
       //home: GroupesPage()
     );

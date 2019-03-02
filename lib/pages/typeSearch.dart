@@ -29,6 +29,7 @@ class TypeSearchPageState extends State<TypeSearchPage> {
 
   void searchKey(String key)  async{
     var res = await TypesDao.goodsSearch(key);
+    var historyWords = await LocalStorage.get(Constants.TYPE_SEARCH_HISTORY);
     setState(() {
       listInfo = res.data;  
       isSearching = false;
@@ -37,18 +38,16 @@ class TypeSearchPageState extends State<TypeSearchPage> {
       if(listInfo.length>0) {
         String saveStr='';
         LocalStorage.remove(Constants.TYPE_SEARCH_HISTORY);
-        var historyWords =  LocalStorage.get(Constants.TYPE_SEARCH_HISTORY);
         if(historyWords == null) 
           saveStr='';
         else 
          saveStr= historyWords.toString();
-        var listStr =  saveStr.split(',').map((item){print('item:$item'); return item;}).toList();
-        
+        var listStr =  saveStr.split(',').map((item){print('item:$item'); return item;}).toList();        
         if(!listStr.contains(key)){
           saveStr=saveStr+','+key;
           print('saveStr:$saveStr');
-          //LocalStorage.save(Constants.TYPE_SEARCH_HISTORY, saveStr);
-          LocalStorage.remove(Constants.TYPE_SEARCH_HISTORY);
+          LocalStorage.save(Constants.TYPE_SEARCH_HISTORY, saveStr);
+          //LocalStorage.remove(Constants.TYPE_SEARCH_HISTORY);
         }
       }
     });
@@ -84,7 +83,6 @@ class TypeSearchPageState extends State<TypeSearchPage> {
                       });
                     },
                     onSubmitted: (String content){
-                      searchContent='化学';
                       keyWord=searchContent;
                       setState(() {
                        isSearching = true; 
@@ -120,7 +118,7 @@ class TypeSearchPageState extends State<TypeSearchPage> {
   Widget historyRow()  {
     getHiswords();
     var arr= historyWords!=null?historyWords.split(','):[];
-    var widgetList =arr.map((item){ if(item!=null) return  historyText(item);}).toList();
+    var widgetList =arr.map((item){ if(item!=null)  return  historyText(item);}).toList();
     return 
       Wrap(
         spacing: 2.0,//左右间距
@@ -130,6 +128,7 @@ class TypeSearchPageState extends State<TypeSearchPage> {
   }
   //历史记录文本样式
   Widget historyText(String text) {
+    if(text=='') return Container(height: 0.0,width: 0.0);
     return
     GestureDetector(child: 
       Chip(
