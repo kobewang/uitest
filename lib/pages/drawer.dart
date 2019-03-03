@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:math' as Math;
 
+import 'package:uitest/utils/tmtypes.dart';
+
 /// 侧拉drawer测试
 ///
 /// auth:wyj date:20190301
@@ -19,6 +21,31 @@ class ShakeCurve extends Curve {
 
 class DrawerPageState extends State<DrawerPage>
     with SingleTickerProviderStateMixin {
+  List typeList=[];
+  List priceList=[
+    {'name':'5千以下','id':'5000','checked':'off'},
+    {'name':'5千-1万','id':'10000','checked':'off'},
+    {'name':'1万-3万','id':'30000','checked':'off'},
+    {'name':'3万-5万','id':'50000','checked':'off'},
+    {'name':'5万-10万','id':'100000','checked':'off'},
+    {'name':'待议价','id':'999999','checked':'off'},
+  ];
+  List priceCbType=[
+    {'name':'中文','id':'0','checked':'off'},
+    {'name':'英文','id':'1','checked':'off'},
+    {'name':'图形','id':'2','checked':'off'},
+    {'name':'中文英文','id':'3','checked':'off'},
+    {'name':'中文图形','id':'4','checked':'off'},
+    {'name':'中英图形','id':'6','checked':'off'}
+  ];
+  List priceLen=[
+    {'name':'1个字','id':'1','checked':'off'},
+    {'name':'2个字','id':'2','checked':'off'},
+    {'name':'3个字','id':'3','checked':'off'},
+    {'name':'4个字','id':'4','checked':'off'},
+    {'name':'5个字','id':'5','checked':'off'},
+    {'name':'5字以上','id':'6','checked':'off'},
+  ];
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
   CurvedAnimation curved; //曲线动画，动画插值，
   AnimationController controller; //动画控制器
@@ -27,6 +54,9 @@ class DrawerPageState extends State<DrawerPage>
   @override
   void initState() {
     super.initState();
+    TmTypes.TYPES.forEach((item){
+      typeList.add({'name':item['title'],'id':item['id'],'checked':'on'});
+    });
     controller = new AnimationController(
         vsync: this, duration: const Duration(seconds: 3));
     //controller.repeat();
@@ -94,23 +124,66 @@ class DrawerPageState extends State<DrawerPage>
                 ? Container(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: typeList()))
+                        children: typeListWidget()))
                 : Container(width: 0, height: 0),
-            ListTile(title: Text('dddd')),
-            ListTile(title: Text('333')),
-            ListTile(title: Text('fdsfds')),
+          //length
+          Divider(height: 1,color: Colors.grey),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+              Text('长度')
+            ]),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    height: 30,
+                    width: 80,
+                    color: Color(0xFFf6f6f6),
+                    child: Center(child:Text('1个字'))
+                  ),                  
+                  Text('2个字'),
+                  Text('3个字'),
+                ],
+              )
+            ]),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text('4个字'),
+                  Text('5个字'),
+                  Text('6个字'),
+                ],
+              )
+            ],)
+          ])
           ],
         ),
       ),
     );
   }
 
-  List<Widget> typeList() {
+  List<Widget> typeListWidget() {
     var listWidget = List<Widget>();
+    print(typeList.length);
     for (var i = 0; i < 14; i++) {
+      print(typeList[i*3+0]['name']);
       listWidget.add(new Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[Text('化学原料'), Text('化学原料'), Text('化学原料')]));
+          children: <Widget>[
+            Text(typeList[i*3+0]['name']), 
+            Text(typeList[i*3+1]['name']), 
+            Text(typeList[i*3+2]['name'])
+            ]
+           )
+        );
     }
     return listWidget;
   }
