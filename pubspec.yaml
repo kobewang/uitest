@@ -31,6 +31,9 @@ dependencies:
   card_settings: ^1.2.5 #卡片表单
   image_picker: ^0.4.10 #选择图片
   json_annotation: ^2.0.0
+  flutter_webview_plugin: ^0.3.1 #网页浏览器
+  cached_network_image: ^0.7.0
+  jmessage_flutter: ^0.0.11 #极光IM
 
 
 

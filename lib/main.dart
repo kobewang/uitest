@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uitest/pages/detail.dart';
 import 'package:uitest/pages/home.dart';
 import 'package:uitest/pages/typeSearch.dart';
 import 'package:uitest/widgets/barOption.dart';
@@ -7,7 +8,10 @@ import 'package:uitest/pages/types.dart';
 import 'package:uitest/pages/groupes.dart';
 import 'package:uitest/pages/regtm.dart';
 import 'package:uitest/pages/drawer.dart';
+import 'package:uitest/pages/father.dart';
 import 'package:uitest/pages/listorder.dart';
+import 'package:uitest/pages/chat.dart';
+import 'package:uitest/pages/webview.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,13 +27,34 @@ class MyApp extends StatelessWidget {
       //home: MyHomePage(title: 'Flutter Demo Home Page'),
       //home: TypesPage(),
       //home: ListOrderPage(),
-      home:DrawerPage()
+      //home:DrawerPage()
+      home:ChatPage(),
+     // home:WebViewPage(title: '测试',url: 'https://www.22.cn'),
+      //home:FatherPage(),
       //home: TypeSearchPage(),
       //home: GroupesPage()
+      onGenerateRoute: (s){return _getRoute(s);},
+      /*
+      routes: <String,WidgetBuilder>{
+        '/detail':(_)=>new DetailPage()
+      },
+      */
     );
   }
 }
+Route<dynamic> _getRoute(RouteSettings settings) {
+    if (settings.name == '/detail') {
+        return _buildRoute(settings, new DetailPage(id:settings.arguments));
+    }
+    return null;
+}
 
+MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
+    return new MaterialPageRoute(
+        settings: settings,
+        builder: (ctx) => builder,
+    );
+}
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -118,3 +143,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
