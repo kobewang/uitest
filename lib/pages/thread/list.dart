@@ -17,6 +17,19 @@ class ThreadListState extends State<ThreadList> {
         appBar: AppBar(
           title: Text('帖子列表'),
         ),
-        body: Column(children: <Widget>[]));
+        body: 
+        RefreshIndicator(
+          child: 
+          ListView.builder(
+            itemCount: 10,
+            itemBuilder: (__,index){
+              return ListTile(title: Text('ddddd'));
+            },
+          ),
+          onRefresh: (){
+            print('refresh');
+          },
+          )
+    );
   }
 }

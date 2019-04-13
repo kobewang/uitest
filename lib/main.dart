@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uitest/pages/detail.dart';
 import 'package:uitest/pages/home.dart';
+import 'package:uitest/pages/thread/list.dart';
 import 'package:uitest/pages/typeSearch.dart';
 import 'package:uitest/widgets/barOption.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
@@ -28,17 +29,22 @@ class MyApp extends StatelessWidget {
       //home: TypesPage(),
       //home: ListOrderPage(),
       //home:DrawerPage()
-      home:ChatPage(),
+      //home:ChatPage(),
+      //home:ThreadList(),
+      //home:APage(),
      // home:WebViewPage(title: '测试',url: 'https://www.22.cn'),
       //home:FatherPage(),
       //home: TypeSearchPage(),
       //home: GroupesPage()
       onGenerateRoute: (s){return _getRoute(s);},
-      /*
+      
       routes: <String,WidgetBuilder>{
-        '/detail':(_)=>new DetailPage()
+        '/detail':(_)=>new DetailPage(),
+        '/': (_) => APage(), 
+        '/page_b': (_) => BPage(), 
+        '/page_c': (_) => CPage()
       },
-      */
+      
     );
   }
 }
@@ -54,6 +60,74 @@ MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
         settings: settings,
         builder: (ctx) => builder,
     );
+}
+/// Page A，Button 的跳转事件等会进行修改，目前先空着
+class APage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Page A'),
+      ),
+      body: Center(child: RaisedButton(onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute(builder:(_){return BPage(); }));
+      }, child: Text('To Page B'))),
+    );
+  }
+}
+
+/// Page B
+class BPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Page B'),
+      ),
+      body: Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        RaisedButton(onPressed: () {
+                  //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder:(_)=>CPage()), ModalRoute.withName('/page_b'));
+                  Navigator.of(context).push(MaterialPageRoute(builder:(_)=>CPage()));
+        }, child: Text('To Page C')),
+        RaisedButton(onPressed: () {}, child: Text('Back Page A'))
+      ])),
+    );
+  }
+}
+
+/// Page C
+class CPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Page C'),
+      ),
+      body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[RaisedButton(onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder:(_)=>DPage()), ModalRoute.withName('/page_b'));
+              }, child: Text('To Page D'))])),
+    );
+  }  
+}
+
+/// Page D
+class DPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Page D'),
+      ),
+      body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[RaisedButton(onPressed: () {}, child: Text('Back Last Page'))])),
+    );
+  }  
 }
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
