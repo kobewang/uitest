@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uitest/pages/detail.dart';
 import 'package:uitest/pages/home.dart';
+import 'package:uitest/pages/share.dart';
 import 'package:uitest/pages/thread/list.dart';
 import 'package:uitest/pages/typeSearch.dart';
 import 'package:uitest/widgets/barOption.dart';
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
       //home: ListOrderPage(),
       //home:DrawerPage()
       //home:ChatPage(),
-      //home:ThreadList(),
-      //home:APage(),
+      home:ThreadList(),
+      //home:SharePage(),
      // home:WebViewPage(title: '测试',url: 'https://www.22.cn'),
       //home:FatherPage(),
       //home: TypeSearchPage(),
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
       
       routes: <String,WidgetBuilder>{
         '/detail':(_)=>new DetailPage(),
-        '/': (_) => APage(), 
+        //'/': (_) => APage(), 
         '/page_b': (_) => BPage(), 
         '/page_c': (_) => CPage()
       },
