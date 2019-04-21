@@ -16,11 +16,12 @@ class ThreadList extends StatefulWidget {
 class ThreadListState extends State<ThreadList> {
   List<ThreadListItemInfo> list;
   int _curPage = 1;
-  var _loadFailed = false;
+  var _loadFailed = true;
 
   Future<List<ThreadListItemInfo>> loadList() async {
+    print('page:${_curPage}');
     var res = await ThreadDao.list(page: _curPage);
-    print(res.data['Data']);
+    //print(res.data['Data']);
     if (res == null) {
       setState(() {
         _loadFailed = true;
@@ -29,7 +30,7 @@ class ThreadListState extends State<ThreadList> {
     }
     setState(() {
       _loadFailed = false;
-      list = ThreadListInfo.getList(res.data['Data']['List']);
+      list.addAll(ThreadListInfo.getList(res.data['Data']['List']));
       print(list.length);
     });
     return list;
@@ -43,9 +44,7 @@ class ThreadListState extends State<ThreadList> {
         ),
         body: ListLayout(
           loadFailded: _loadFailed,
-          refresh: () {
-            loadList();
-          },
+          refresh: loadList,
           more: () {
             _curPage = _curPage + 1;
             return loadList();
@@ -60,7 +59,7 @@ class ThreadListState extends State<ThreadList> {
                 );
               },
               itemBuilder: (_, i) {
-                return Text(list[i].content);
+                return Text(list[i].id.toString());
               },
             );
           },
