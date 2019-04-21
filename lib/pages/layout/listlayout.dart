@@ -136,7 +136,13 @@ class ListLayoutState extends State<ListLayout> {
       return ListView(children: <Widget>[
         LoadFailedOrNo(
           isFailed: false,
-          padding:EdgeInsets.only(top: 180)
+          padding:EdgeInsets.only(top: 180),
+            onReload:(){
+            setState(() {
+             _firstLoad=true; 
+            });
+            _onPullDown();
+          }
         )
       ]);
     }

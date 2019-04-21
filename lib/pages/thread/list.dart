@@ -30,6 +30,7 @@ class ThreadListState extends State<ThreadList> {
     setState(() {
       _loadFailed = false;
       list = ThreadListInfo.getList(res.data['Data']['List']);
+      print(list.length);
     });
     return list;
   }
