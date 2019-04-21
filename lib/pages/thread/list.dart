@@ -18,18 +18,20 @@ class ThreadListState extends State<ThreadList> {
   int _curPage = 1;
   var _loadFailed = false;
 
-  loadList() async {
+  Future<List<ThreadListItemInfo>> loadList() async {
     var res = await ThreadDao.list(page: _curPage);
+    print(res.data['Data']);
     if (res == null) {
       setState(() {
         _loadFailed = true;
-        return;
+        return null;
       });
     }
     setState(() {
       _loadFailed = false;
       list = ThreadListInfo.getList(res.data['Data']['List']);
     });
+    return list;
   }
 
   @override
