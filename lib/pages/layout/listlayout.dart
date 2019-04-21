@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:uitest/config/constants.dart';
+import 'package:uitest/pages/layout/loadFailedOrNo.dart';
 import 'package:uitest/pages/layout/refreshlist.dart';
 
 /// auth:yyb
@@ -115,13 +116,30 @@ class ListLayoutState extends State<ListLayout> {
     //失败加载
     if(widget.loadFailded) {
       return ListView(children: <Widget>[
-        LoadFailed(
-          padding:EdgeInsets.only(top: 50),
+        LoadFailedOrNo(
+          isFailed: true,
+          padding:EdgeInsets.only(top: 180),
           onReload:(){
-            
+            setState(() {
+             _firstLoad=true; 
+            });
+            _onPullDown();
           }
         )
       ]);
     }
+    //内容空
+    if(_data == null || _data.length ==0 ) {
+      if(widget.nullView!= null){
+        return widget.nullView;
+      }
+      return ListView(children: <Widget>[
+        LoadFailedOrNo(
+          isFailed: false,
+          padding:EdgeInsets.only(top: 180)
+        )
+      ]);
+    }
+    return widget.builder(context,_data);
   }
 }

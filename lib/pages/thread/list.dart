@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:uitest/dao/threadDao.dart';
+import 'package:uitest/model/threadListInfo.dart';
+import 'package:uitest/model/threadListItemInfo.dart';
+import 'package:uitest/pages/layout/listlayout.dart';
 
 /// 帖子列表页
 ///
@@ -10,26 +14,53 @@ class ThreadList extends StatefulWidget {
 }
 
 class ThreadListState extends State<ThreadList> {
-  List listData=[{'head'}];
+  List<ThreadListItemInfo> list;
+  int _curPage = 1;
+  var _loadFailed = false;
+
+  loadList() async {
+    var res = await ThreadDao.list(page: _curPage);
+    if (res == null) {
+      setState(() {
+        _loadFailed = true;
+        return;
+      });
+    }
+    setState(() {
+      _loadFailed = false;
+      list = ThreadListInfo.getList(res.data['Data']['List']);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('帖子列表'),
         ),
-        body: 
-        RefreshIndicator(
-          child: 
-          ListView.builder(
-            itemCount: 10,
-            itemBuilder: (__,index){
-              return ListTile(title: Text('ddddd'));
-            },
-          ),
-          onRefresh: (){
-            print('refresh');
+        body: ListLayout(
+          loadFailded: _loadFailed,
+          refresh: () {
+            loadList();
           },
-          )
-    );
+          more: () {
+            _curPage = _curPage + 1;
+            return loadList();
+          },
+          builder: (_, __) {
+            return ListView.separated(
+              itemCount: list.length,
+              separatorBuilder: (_, i) {
+                return Divider(
+                  height: 1,
+                  color: Color(0xFFececec),
+                );
+              },
+              itemBuilder: (_, i) {
+                return Text(list[i].content);
+              },
+            );
+          },
+        ));
   }
 }
