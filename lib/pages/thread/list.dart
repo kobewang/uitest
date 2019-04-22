@@ -59,10 +59,28 @@ class ThreadListState extends State<ThreadList> {
                 );
               },
               itemBuilder: (_, i) {
-                return Text(list[i].id.toString());
+                return threadItem(_,i);
               },
             );
           },
         ));
   }
+  //UI-详情Item
+  Widget threadItem(BuildContext context,int index) {
+    return Container(
+      padding: EdgeInsets.only(left: 3,right: 3,top: 3,bottom: 3),
+      child: 
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          //作者行
+          //内容行
+          //图片行
+          //地址行
+          //状态行
+
+        ],
+      )
+    );
+  } 
 }
