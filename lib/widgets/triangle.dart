@@ -5,15 +5,16 @@ import 'package:flutter/cupertino.dart';
 ///
 class Triangle extends StatelessWidget{
   Color myColor;
+  double width;
   int orientation;//朝向 1 正三角 0 倒三角
-  Triangle({Key key,this.myColor,this.orientation}):super(key:key);
+  Triangle({Key key,this.width=7.0,this.myColor,this.orientation}):super(key:key);
   @override
   Widget build(BuildContext context) {
     return new ClipPath(
       clipper: new _TriangleCliper(orientation:orientation),
       child: new SizedBox(
-        width: 7.0,
-        height: 7.0,
+        width: width,
+        height: width,
         child: Container(color: myColor),
       ),
     );

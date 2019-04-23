@@ -32,9 +32,11 @@ class _CustomFlatButtonState extends State<CustomFlatButton> {
     return Container(
       width: widget.width,
       height: widget.height,
-      child: FlatButton(
+      child: OutlineButton(
+        borderSide: new BorderSide(color: widget.textColor ?? Colors.blue),
         shape: RoundedRectangleBorder(
           borderRadius: widget.borderRadius ?? BorderRadius.circular(5),
+
         ),
         textColor: widget.textColor ?? Colors.white,
         color: widget.backgroundColor ?? Colors.blue,
