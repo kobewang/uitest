@@ -61,9 +61,10 @@ class ThreadListState extends State<ThreadList> {
           builder: (_, __) {
             return ListView.separated(
               itemCount: list.length,
-              separatorBuilder: (_, i) {
-                return Divider(
-                  height: 1,
+              separatorBuilder: (_, i) {                
+                return
+                Container(
+                  height: 10,
                   color: Color(0xFFececec),
                 );
               },
@@ -81,6 +82,7 @@ class ThreadListState extends State<ThreadList> {
     var rightEdge = 7.0; //右边距
     return Container(
         margin: EdgeInsets.only(bottom: 10),
+        //color: Colors.white,
         padding: EdgeInsets.only(left: 3, right: 3, top: 3, bottom: 3),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -142,7 +144,7 @@ class ThreadListState extends State<ThreadList> {
                             widthPx: 120,
                             heightPx: 55,
                             fontSizePx: 26,
-                            color: Theme.of(context).primaryColor,
+                            color: Color(0xFF63BAD0),
                           )
                         ],
                       )))
@@ -151,7 +153,7 @@ class ThreadListState extends State<ThreadList> {
             getRowChild(Text(
               threadInfo.content ?? '',
               style: TextStyle(
-                  color: Color(0xFF666666),
+                  color: Color(0xFF111111),
                   fontSize: Utils.getPXSize(context, 28)),
             )),
 
@@ -164,7 +166,8 @@ class ThreadListState extends State<ThreadList> {
                   threadInfo.addtime,
                   style: TextStyle(
                       fontSize: Utils.getPXSize(context, 24),
-                      color: Color(0xFF666666)),
+                      color: Color(0xFF919191),
+                )
                 )
               ],
             )),
@@ -173,14 +176,14 @@ class ThreadListState extends State<ThreadList> {
               children: <Widget>[
                 Icon(
                   Icons.location_on,
-                  color: Theme.of(context).primaryColor,
+                  color: Color(0xFF919191),
                   size: 20,
                 ),
                 Expanded(
                     child: Text(threadInfo.address ?? '',
                         style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: Utils.getPXSize(context, 30))))
+                            color: Color(0xFF919191),
+                            fontSize: Utils.getPXSize(context, 24))))
               ],
             )),
             //状态行
@@ -251,7 +254,7 @@ class ThreadListState extends State<ThreadList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-            margin: EdgeInsets.only(left: 10),
+            margin: EdgeInsets.only(left: 5),
             child:
                 Triangle(myColor: colorStatusGrey, width: 10, orientation: 1)),
         Container(
