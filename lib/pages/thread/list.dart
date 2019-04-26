@@ -4,6 +4,9 @@ import 'package:uitest/dao/threadDao.dart';
 import 'package:uitest/model/threadListInfo.dart';
 import 'package:uitest/model/threadListItemInfo.dart';
 import 'package:uitest/pages/layout/listlayout.dart';
+import 'package:uitest/pages/thread/detail.dart';
+import 'package:uitest/pages/thread/widgets/authorRow.dart';
+import 'package:uitest/pages/thread/widgets/threadLabel.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
 import 'package:uitest/widgets/customflatbutton.dart';
@@ -22,6 +25,7 @@ class ThreadListState extends State<ThreadList> {
   int _curPage = 1;
   var _loadFailed = true;
 
+  ///加载列表
   Future<List<ThreadListItemInfo>> loadList() async {
     print('page:${_curPage}');
     var res = await ThreadDao.list(page: _curPage);
@@ -43,7 +47,12 @@ class ThreadListState extends State<ThreadList> {
     return list;
   }
 
-  @override
+  ///详情点击事件
+  _detailClick(int id) {
+    Navigator.of(context).push(new MaterialPageRoute(builder:(contexzt){return ThreadDetailPage(tid:id); });
+  }
+
+  @override //以build为界限，以上：(1)参数（2）方法 (3)事件，事件以_开头；以下：界面UI部分
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -61,9 +70,8 @@ class ThreadListState extends State<ThreadList> {
           builder: (_, __) {
             return ListView.separated(
               itemCount: list.length,
-              separatorBuilder: (_, i) {                
-                return
-                Container(
+              separatorBuilder: (_, i) {
+                return Container(
                   height: 10,
                   color: Color(0xFFececec),
                 );
@@ -82,93 +90,33 @@ class ThreadListState extends State<ThreadList> {
     var rightEdge = 7.0; //右边距
     return Container(
         margin: EdgeInsets.only(bottom: 10),
-        //color: Colors.white,
         padding: EdgeInsets.only(left: 3, right: 3, top: 3, bottom: 3),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             //作者行
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
-                Widget>[
-              //头像
-              Container(
-                child: CircleAvatar(
-                    backgroundImage: NetworkImage(threadInfo.head)),
-                height: 40,
-                width: 40,
-              ),
-              //作者，类型，电话
-              Expanded(
-                  child: Container(
-                      margin: EdgeInsets.only(left: 5, right: rightEdge),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              //作者
-                              Row(children: <Widget>[
-                                Container(
-                                  width: 150,
-                                  child:
-                                Text(threadInfo.name,
-                                overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontSize:
-                                            Utils.getPXSize(context, 32)))),
-                                threadInfo.isVip == 1
-                                    ? Image.asset(
-                                        'images/diamond.png',
-                                        width: 20,
-                                        height: 20,
-                                      )
-                                    : Container()
-                              ]),
-                              //类别+商圈
-                              Container(
-                                  margin: EdgeInsets.only(top: 2),
-                                  child: Row(children: <Widget>[
-                                    getTdLable(threadInfo.area, Colors.orange),
-                                    Container(
-                                        margin: EdgeInsets.only(left: 3),
-                                        child: getTdLable(
-                                            threadInfo.type, Colors.green))
-                                  ]))
-                            ],
-                          ),
-                          CustomButton(
-                            text: '电话',
-                            widthPx: 120,
-                            heightPx: 55,
-                            fontSizePx: 26,
-                            color: Color(0xFF63BAD0),
-                          )
-                        ],
-                      )))
-            ]),
+            ThreadAuthorRow(threadInfo:threadInfo),
             //内容行
+            GestureDetector(
+              onTap:(){ _detailClick(threadInfo.id); },
+              child: 
             getRowChild(Text(
               threadInfo.content ?? '',
               style: TextStyle(
                   color: Color(0xFF111111),
                   fontSize: Utils.getPXSize(context, 28)),
-            )),
+            ))),
 
             //图片行
             getRowChild(threadPicList(index)),
             //时间行
             getRowChild(Row(
               children: <Widget>[
-                Text(
-                  threadInfo.addtime,
-                  style: TextStyle(
+                Text(threadInfo.addtime,
+                    style: TextStyle(
                       fontSize: Utils.getPXSize(context, 24),
                       color: Color(0xFF919191),
-                )
-                )
+                    ))
               ],
             )),
             //地址行
@@ -222,19 +170,6 @@ class ThreadListState extends State<ThreadList> {
       listRows.add(Row(children: listPics));
     }
     return Column(children: listRows);
-  }
-
-  ///UI-标签
-  Widget getTdLable(String title, Color color) {
-    return CustomFlatButton(
-      height: 20,
-      width: 60,
-      textColor: color,
-      child: Text(
-        title,
-        style: TextStyle(fontSize: Utils.getPXSize(context, 20), color: color),
-      ),
-    );
   }
 
   ///UI-返回统一间距的row控件

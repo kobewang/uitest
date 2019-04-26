@@ -15,6 +15,7 @@ class  HttpManager {
   //static final String API_TM_REG = API_HOST+"/tm/reg";
   static final String API_TM_REG = API_HOST+"/xcxpic/uploadtmreg";
   static final String API_THREAD_LIST = API_HOST+"/thread/list";
+  static final String API_THREAD_DETAIL= API_HOST+"/thread/detail";
 
   static netPost(url,params,Map<String,String> header, Options option,{noTip = false}) async {
     Map<String,String> headers = new HashMap();
