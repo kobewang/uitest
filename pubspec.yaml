@@ -26,7 +26,6 @@ dependencies:
   fluwx: ^0.5.5 #微信
   dio: ^1.0.14 #网络框架
   event_bus: ^1.0.1 #事件订阅
-  flutter_html: ^0.9.3
   shared_preferences: ^0.5.1 #本地存储
   card_settings: ^1.2.5 #卡片表单
   image_picker: ^0.4.10 #选择图片
@@ -37,6 +36,9 @@ dependencies:
   url_launcher: ^4.0.3 #url唤起
   flutter_qq_bridge: ^0.0.3 #QQ快捷
   pull_to_refresh: ^1.2.0 #下拉加载
+  flutter_html: ^0.9.6 #富文本
+  html: ^0.13.3 #富文本
+  
 
   #flutter_html_textview: ^0.2.6
   #flutter_html_view: ^0.2.6

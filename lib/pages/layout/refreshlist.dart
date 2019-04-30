@@ -34,6 +34,14 @@ class RefreshList extends StatelessWidget {
             _controller?.sendBack(false, RefreshStatus.idle);
           }
         }
+         if (up && onPullDown != null) {
+          //print("onPullDown");
+          completed = await onPullDown();
+          mode = completed ? RefreshStatus.completed : RefreshStatus.failed;
+          if (isNoMore) {
+            _controller?.sendBack(false, RefreshStatus.idle);
+          }
+        }
         _controller?.sendBack(up, mode);
       },
       enablePullDown: onPullDown != null,

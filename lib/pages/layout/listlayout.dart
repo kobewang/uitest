@@ -63,10 +63,11 @@ class ListLayoutState extends State<ListLayout> {
 
   ///下拉
   Future<bool> _onPullDown() async {
+       print('pulldown:***');
     var data = await widget.refresh();
    
     _data =data ??[];
-     //print('pulldown:${data.length}');
+     print('pulldown:${data.length}');
     _firstLoad = false;
     _hidderPullUp = false;
     //data<limit 不显示上拉
@@ -101,6 +102,7 @@ class ListLayoutState extends State<ListLayout> {
       isNoMore: widget.noMore,
       controller: _controller,
       onPullDown: widget.refresh==null?null:_onPullDown,
+      //onPullDown:_onPullDown,
       onPullUp: (widget.more==null||
       _data==null ||
       _data.length == 0 ||

@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/dao/threadDao.dart';
 import 'package:uitest/model/threadInfo.dart';
+import 'package:uitest/pages/thread/widgets/authorRow.dart';
+import 'package:uitest/pages/thread/widgets/nineMap.dart';
+import 'package:uitest/pages/thread/widgets/threadContent.dart';
+import 'package:uitest/pages/thread/widgets/threadTime.dart';
+import 'package:uitest/pages/thread/widgets/threadAddr.dart';
 import 'package:uitest/pages/thread/widgets/threadLabel.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
@@ -11,7 +16,7 @@ import 'package:uitest/widgets/CustomButton.dart';
 /// date: 20190425
 class ThreadDetailPage extends StatefulWidget {
   int tid;
-  ThreadDetailPage({Key key,this.tid}):super(key:key);
+  ThreadDetailPage({Key key, this.tid}) : super(key: key);
   @override
   createState() => ThreadDetailPageState();
 }
@@ -28,10 +33,8 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
   //接口获取详情
   Future<void> loadData() async {
     var info = await ThreadDao.detail(widget.tid);
-    print('ddd');
     setState(() {
       threadInfo = info;
-      print(info.name);
     });
   }
 
@@ -55,6 +58,7 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                   //作者行
                   listItemAuth(),
                   //分隔行
+                  listDivider(),
                   //正文行
                   listItemContent(),
                   //图片行
@@ -138,105 +142,31 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                 ))),
         flex: flexWeight);
   }
+
   ///UI-item layout
-  listItemLayout(Widget child) {
+  listItemLayout(Widget child,{double marginTop= 0.0}) {
     return Container(
-      padding: EdgeInsets.only(left: 10,right: 10),
-      child:child
-    );
+        margin: EdgeInsets.only(top:marginTop),
+        padding: EdgeInsets.only(left: 10, right: 10), child: child);
+  }
+  ///UI-分隔行
+  listDivider() {
+    return listItemLayout(Divider(height: 2,),marginTop: 3);
   }
   ///UI-作者
   listItemAuth() {
-    var child= Container(
-        margin: EdgeInsets.only(bottom: 10),
-        padding: EdgeInsets.only(left: 3, right: 3, top: 3, bottom: 3),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              //作者行
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    //头像
-                    Container(
-                      child: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(threadInfo?.head ?? '')),
-                      height: 40,
-                      width: 40,
-                    ),
-                    //作者，类型，电话
-                    Expanded(
-                        child: Container(
-                            margin: EdgeInsets.only(left: 5),
-                            height: 50,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    //作者
-                                    Row(children: <Widget>[
-                                       threadInfo.isVip == 1
-                                          ? Image.asset(
-                                              'images/diamond.png',
-                                              width: 20,
-                                              height: 20,
-                                            )
-                                          : Container(),
-                                      Container(
-                                          width: 150,
-                                          child: Text(threadInfo?.name ?? '',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                  fontSize: Utils.getPXSize(
-                                                      context, 32)))),
-                                     
-                                    ]),
-                                    //类别+商圈
-                                    Container(
-                                        margin: EdgeInsets.only(top: 2),
-                                        child: Row(children: <Widget>[
-                                          ThreadLabel(
-                                              labelName: threadInfo?.area ?? '',
-                                              color: Colors.orange),
-                                          Container(
-                                              margin: EdgeInsets.only(left: 3),
-                                              child: ThreadLabel(
-                                                  labelName:
-                                                      threadInfo?.type ?? '',
-                                                  color: Colors.green))
-                                        ]))
-                                  ],
-                                ),
-                                CustomButton(
-                                  text: '电话',
-                                  widthPx: 120,
-                                  heightPx: 55,
-                                  fontSizePx: 26,
-                                  color: Color(0xFF63BAD0),
-                                )
-                              ],
-                            )))
-                  ])
-            ]));
-
-    return listItemLayout(child);            
+    var child = ThreadAuthorRow(threadInfo: threadInfo);
+    return listItemLayout(child,marginTop: 10);
   }
 
   ///UI-正文
   listItemContent() {
-    return listItemLayout(Text('正文'));
-    
+    return listItemLayout(ThreadContent(content:threadInfo.content,id:threadInfo.id),marginTop: 6);
   }
 
   ///UI-图片行
   listItemPics() {
-    return listItemLayout(Text('图片'));
+    return listItemLayout(NineMap(threadInfo:threadInfo));
   }
 
   ///UI-状态行
@@ -244,7 +174,7 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
     return listItemLayout(Text('状态'));
   }
 
-  ///UI-阅读数
+  ///UI-阅读列表
   listItemViewer() {
     return listItemLayout(Text('阅读'));
   }
@@ -254,3 +184,4 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
     return listItemLayout(Text('评论'));
   }
 }
+
