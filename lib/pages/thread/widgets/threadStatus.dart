@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/pages/thread/detail.dart';
+import 'package:uitest/pages/thread/widgets/threadTime.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/triangle.dart';
 
@@ -16,8 +17,6 @@ class ThreadStatus extends StatelessWidget {
   ThreadStatus({Key key, this.threadInfo, this.rightEdge, this.isList})
       : super(key: key);
 
-
-
   @override
   Widget build(BuildContext context) {
     var colorStatusGrey = Colors.grey[300]; //状态行灰色
@@ -25,30 +24,34 @@ class ThreadStatus extends StatelessWidget {
     var rowWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-            margin: EdgeInsets.only(left: 5),
-            child:
-                Triangle(myColor: colorStatusGrey, width: 10, orientation: 1)),
+        isList
+            ? Container(
+                margin: EdgeInsets.only(left: 5),
+                child: Triangle(
+                    myColor: colorStatusGrey, width: 10, orientation: 1))
+            : Container(),
         Container(
           margin: EdgeInsets.only(right: rightEdge),
-          decoration: new BoxDecoration(shape: BoxShape.rectangle, boxShadow: [
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(1.0, 1.0),
-                blurRadius: 1.0),
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(-1.0, -1.0),
-                blurRadius: 1.0),
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(1.0, -1.0),
-                blurRadius: 1.0),
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(-1.0, 1.0),
-                blurRadius: 1.0),
-          ]),
+          decoration: isList
+              ? new BoxDecoration(shape: BoxShape.rectangle, boxShadow: [
+                  new BoxShadow(
+                      color: colorStatusGrey,
+                      offset: Offset(1.0, 1.0),
+                      blurRadius: 1.0),
+                  new BoxShadow(
+                      color: colorStatusGrey,
+                      offset: Offset(-1.0, -1.0),
+                      blurRadius: 1.0),
+                  new BoxShadow(
+                      color: colorStatusGrey,
+                      offset: Offset(1.0, -1.0),
+                      blurRadius: 1.0),
+                  new BoxShadow(
+                      color: colorStatusGrey,
+                      offset: Offset(-1.0, 1.0),
+                      blurRadius: 1.0),
+                ])
+              : BoxDecoration(),
           height: 25.0,
           width: MediaQuery.of(context).size.width - 50,
           child: Row(
@@ -56,7 +59,7 @@ class ThreadStatus extends StatelessWidget {
               children: <Widget>[
                 Row(children: <Widget>[
                   Container(
-                      margin: EdgeInsets.only(left: 10, right: 5),
+                      margin: EdgeInsets.only(left: 0, right: 5),
                       child: Icon(
                         Icons.remove_red_eye,
                         color: Colors.grey,
@@ -87,16 +90,19 @@ class ThreadStatus extends StatelessWidget {
                 ]),
                 isList
                     ? GestureDetector(
-                        onTap: (){Navigator.of(context).push(new MaterialPageRoute(builder: (contexzt) {
-      return ThreadDetailPage(tid: threadInfo.id);
-    }));},
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(new MaterialPageRoute(builder: (contexzt) {
+                            return ThreadDetailPage(tid: threadInfo.id);
+                          }));
+                        },
                         child: Container(
                             margin: EdgeInsets.only(right: 10),
                             child: Text('立即查看>>',
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontSize: fontSize))))
-                    : Container()
+                    : ThreadTime(addtime: threadInfo.addtime)
               ]),
         )
       ],
@@ -105,9 +111,10 @@ class ThreadStatus extends StatelessWidget {
         child: rowWidget,
         onTap: () {
           if (isList) {
-               Navigator.of(context).push(new MaterialPageRoute(builder: (contexzt) {
-      return ThreadDetailPage(tid: threadInfo.id);
-    }));
+            Navigator.of(context)
+                .push(new MaterialPageRoute(builder: (contexzt) {
+              return ThreadDetailPage(tid: threadInfo.id);
+            }));
           }
         });
   }

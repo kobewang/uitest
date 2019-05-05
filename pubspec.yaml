@@ -38,7 +38,7 @@ dependencies:
   pull_to_refresh: ^1.2.0 #下拉加载
   flutter_html: ^0.9.6 #富文本
   html: ^0.13.3 #富文本
-  
+  photo_view: ^0.3.1 #图片preview
 
   #flutter_html_textview: ^0.2.6
   #flutter_html_view: ^0.2.6

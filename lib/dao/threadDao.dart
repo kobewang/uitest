@@ -29,7 +29,7 @@ class ThreadDao {
     };
     var res = await HttpManager.netPost(
         HttpManager.API_THREAD_LIST, params, null, null);
-    print(params);
+    //print(params);
     if (res != null && res.result && res.data.length > 0) {
       var data = res.data;
       return new DataResult(data, true);
@@ -41,6 +41,7 @@ class ThreadDao {
   static Future<ThreadInfo> detail(int threadId) async {
     ThreadInfo tdInfo;
     var params = {"Token": "", "Plat": 0, "TimeStamp": 0, "Sign": ""};
+    print(HttpManager.API_THREAD_DETAIL + '?Id=' + threadId.toString());
     var res = await HttpManager.netPost(
         HttpManager.API_THREAD_DETAIL + '?Id=' + threadId.toString(),
         params,

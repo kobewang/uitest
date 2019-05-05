@@ -11,8 +11,7 @@ import 'package:uitest/pages/thread/widgets/threadAddr.dart';
 import 'package:uitest/pages/thread/widgets/threadContent.dart';
 import 'package:uitest/pages/thread/widgets/threadStatus.dart';
 import 'package:uitest/pages/thread/widgets/threadTime.dart';
-import 'package:uitest/utils/utils.dart';
-import 'package:uitest/widgets/triangle.dart';
+
 
 /// 帖子列表页
 ///
@@ -30,7 +29,6 @@ class ThreadListState extends State<ThreadList> {
   ///加载列表
   Future<List<ThreadListItemInfo>> loadList() async {
     var res = await ThreadDao.list(page: _curPage);
-    //print(res.data['Data']);
     if (res == null) {
       setState(() {
         _loadFailed = true;

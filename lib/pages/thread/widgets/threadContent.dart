@@ -18,7 +18,7 @@ class ThreadContent extends StatelessWidget {
         parse(content);
     return GestureDetector(
         onTap: () {
-          Navigator.of(context).push(new MaterialPageRoute(builder: (contexzt) {
+          Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
             return ThreadDetailPage(tid: id);
           }));
         },

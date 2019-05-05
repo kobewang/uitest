@@ -4,12 +4,11 @@ import 'package:uitest/dao/threadDao.dart';
 import 'package:uitest/model/threadInfo.dart';
 import 'package:uitest/pages/thread/widgets/authorRow.dart';
 import 'package:uitest/pages/thread/widgets/nineMap.dart';
-import 'package:uitest/pages/thread/widgets/threadContent.dart';
-import 'package:uitest/pages/thread/widgets/threadTime.dart';
 import 'package:uitest/pages/thread/widgets/threadAddr.dart';
-import 'package:uitest/pages/thread/widgets/threadLabel.dart';
-import 'package:uitest/utils/utils.dart';
-import 'package:uitest/widgets/CustomButton.dart';
+import 'package:uitest/pages/thread/widgets/threadContent.dart';
+import 'package:uitest/pages/thread/widgets/threadStatus.dart';
+import 'package:uitest/pages/thread/widgets/threadTime.dart';
+import 'package:uitest/pages/thread/widgets/threadViewer.dart';
 
 /// auth: wyj
 /// desc: 帖子详情
@@ -63,6 +62,12 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                   listItemContent(),
                   //图片行
                   listItemPics(),
+                  //时间行
+                  //listItemTime(),
+                  //地址行
+                  listItemAddr(),
+                  //分隔
+                  listItemDivider(),
                   //状态行
                   listItemStatus(),
                   //阅览数
@@ -168,15 +173,28 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
   listItemPics() {
     return listItemLayout(NineMap(threadInfo:threadInfo));
   }
+  ///UI-时间行
+  listItemTime() {
+    return listItemLayout(ThreadTime(addtime: threadInfo.addtime));
+  }
+  ///UI-分割
+  listItemDivider() {
+    return listItemLayout(new Divider(color: Color(0xFF919191),height:1,));
+  }
+  ///UI-地址行
+  listItemAddr() {
+    return listItemLayout(ThreadAddr(address: threadInfo.address));
+  }
 
   ///UI-状态行
   listItemStatus() {
-    return listItemLayout(Text('状态'));
+    return listItemLayout(ThreadStatus(
+        threadInfo: threadInfo, rightEdge: 0.0, isList: false));
   }
 
   ///UI-阅读列表
   listItemViewer() {
-    return listItemLayout(Text('阅读'));
+    return listItemLayout(ThreadViewer(viewList: threadInfo.viewList));
   }
 
   ///UI-评论
