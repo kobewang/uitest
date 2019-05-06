@@ -39,6 +39,7 @@ dependencies:
   flutter_html: ^0.9.6 #富文本
   html: ^0.13.3 #富文本
   photo_view: ^0.3.1 #图片preview
+  fluttertoast: ^2.2.11 #toast弹窗
 
   #flutter_html_textview: ^0.2.6
   #flutter_html_view: ^0.2.6

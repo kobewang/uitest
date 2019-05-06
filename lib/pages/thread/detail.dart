@@ -9,6 +9,8 @@ import 'package:uitest/pages/thread/widgets/threadContent.dart';
 import 'package:uitest/pages/thread/widgets/threadStatus.dart';
 import 'package:uitest/pages/thread/widgets/threadTime.dart';
 import 'package:uitest/pages/thread/widgets/threadViewer.dart';
+import 'package:uitest/utils/myDialog.dart';
+import 'package:uitest/widgets/CustomButton.dart';
 
 /// auth: wyj
 /// desc: 帖子详情
@@ -23,6 +25,7 @@ class ThreadDetailPage extends StatefulWidget {
 class ThreadDetailPageState extends State<ThreadDetailPage> {
   //参数定义
   ThreadInfo threadInfo;
+  String _commentStr='';
   @override
   initState() {
     loadData();
@@ -42,6 +45,25 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
   _publishClickEvent() {}
   //拨号点击事件
   _mobileClickEvent() {}
+  //评论提交
+  _commentClickEvent() async{
+    if(_commentStr.isEmpty){
+      MyDialog.showToast('请输入评论内容');
+      return;
+    }
+    MyDialog.showLoading(context, '提交中..');
+    var res = await ThreadDao.addComment(widget.tid, _commentStr);
+    if(res!=null){
+      Navigator.of(context).pop();
+      if(res.data['Code']==0) {
+        MyDialog.showToast('评论成功');
+        setState(() {
+         cmtBoxShow=false; 
+        });
+      }
+    }
+    
+  }
 
   @override //以build为界限，以上：(1)参数（2）方法 (3)事件，事件以_开头；以下：界面UI部分
   build(BuildContext context) {
@@ -67,11 +89,12 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                   //地址行
                   listItemAddr(),
                   //分隔
-                  listItemDivider(),
+                  listDivider(),
                   //状态行
                   listItemStatus(),
                   //阅览数
                   listItemViewer(),
+                  listBlockDivider(),
                   //评论部分
                   listItemComment()
                 ],
@@ -149,38 +172,55 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
   }
 
   ///UI-item layout
-  listItemLayout(Widget child,{double marginTop= 0.0}) {
+  listItemLayout(Widget child, {double marginTop = 0.0}) {
     return Container(
-        margin: EdgeInsets.only(top:marginTop),
-        padding: EdgeInsets.only(left: 10, right: 10), child: child);
+        margin: EdgeInsets.only(top: marginTop),
+        padding: EdgeInsets.only(left: 10, right: 10),
+        child: child);
   }
-  ///UI-分隔行
+
+  ///UI-list-分隔行
   listDivider() {
-    return listItemLayout(Divider(height: 2,),marginTop: 3);
+    return listItemLayout(
+        Divider(
+          height: 2,
+        ),
+        marginTop: 3);
   }
+
   ///UI-作者
   listItemAuth() {
     var child = ThreadAuthorRow(threadInfo: threadInfo);
-    return listItemLayout(child,marginTop: 10);
+    return listItemLayout(child, marginTop: 10);
   }
 
   ///UI-正文
   listItemContent() {
-    return listItemLayout(ThreadContent(content:threadInfo.content,id:threadInfo.id),marginTop: 6);
+    return listItemLayout(
+        ThreadContent(content: threadInfo.content, id: threadInfo.id),
+        marginTop: 6);
   }
 
   ///UI-图片行
   listItemPics() {
-    return listItemLayout(NineMap(threadInfo:threadInfo));
+    return listItemLayout(NineMap(threadInfo: threadInfo));
   }
+
   ///UI-时间行
   listItemTime() {
     return listItemLayout(ThreadTime(addtime: threadInfo.addtime));
   }
-  ///UI-分割
-  listItemDivider() {
-    return listItemLayout(new Divider(color: Color(0xFF919191),height:1,));
+
+  ///UI-块-分割
+  listBlockDivider() {
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: new BoxDecoration(
+            shape: BoxShape.rectangle, color: Colors.grey[300]),
+        height: 10,
+        margin: EdgeInsets.only(top: 20.0));
   }
+
   ///UI-地址行
   listItemAddr() {
     return listItemLayout(ThreadAddr(address: threadInfo.address));
@@ -188,8 +228,8 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
 
   ///UI-状态行
   listItemStatus() {
-    return listItemLayout(ThreadStatus(
-        threadInfo: threadInfo, rightEdge: 0.0, isList: false));
+    return listItemLayout(
+        ThreadStatus(threadInfo: threadInfo, rightEdge: 0.0, isList: false));
   }
 
   ///UI-阅读列表
@@ -197,9 +237,104 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
     return listItemLayout(ThreadViewer(viewList: threadInfo.viewList));
   }
 
+  bool cmtBoxShow = false; //显示评论框
   ///UI-评论
   listItemComment() {
-    return listItemLayout(Text('评论'));
+    var cmtWidget = Container(
+        padding: EdgeInsets.only(top: 5),
+        child: Column(children: <Widget>[
+          //表头行
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('评论', style: TextStyle(fontSize: 15)),
+              GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      cmtBoxShow = !cmtBoxShow;
+                    });
+                  },
+                  child: Text('发布',
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor, fontSize: 15)))
+            ],
+          ),
+          Container(margin: EdgeInsets.only(top: 3), child: Divider(height: 1)),
+
+          //暂无评论
+          Container(
+              margin: EdgeInsets.only(top: 15, bottom: 15),
+              child: !cmtBoxShow
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.note_add,
+                          color: Color(0xff858585),
+                          size: 30,
+                        ),
+                        Text('还没有评论..',
+                            style: TextStyle(
+                                fontSize: 10, color: Color(0xff858585)))
+                      ],
+                    )
+                  : Column(
+                      children: <Widget>[
+                        Container(
+                            padding: EdgeInsets.only(left: 12, right: 12),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                    color: Color(0xffd3d3d3), width: 1)),
+                            child: TextField(
+                              keyboardType: TextInputType.text,
+                              maxLines: 2,
+                              obscureText: false, //是否隐藏输入
+                              textInputAction: TextInputAction.newline,
+                              onChanged: (val){
+                                _commentStr=val;
+                              },
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "请输入评论内容",
+                                  hintStyle: TextStyle(
+                                      fontSize: 15, color: Color(0xff858585))),
+                            )),
+                        Container(
+                            margin: EdgeInsets.only(top: 5),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  CustomButton(
+                                    text: '取消',
+                                    widthPx: 120,
+                                    heightPx: 50,
+                                    fontSizePx: 20,
+                                    color: Colors.white,
+                                    isOutLine: true,
+                                    fontColor: Colors.black,
+                                    borderColor:  Color(0xff858585),
+                                    onPressed: () {
+                                      setState(() {
+                                        cmtBoxShow = false;
+                                      });
+                                    },
+                                  ),
+                                  Container(
+                                      margin: EdgeInsets.only(left: 10),
+                                      child: CustomButton(
+                                        text: '发表',
+                                        widthPx: 120,
+                                        heightPx: 50,
+                                        fontSizePx: 20,
+                                        onPressed: () {
+                                          _commentClickEvent();
+                                        },
+                                      )),
+                                ])),
+                      ],
+                    ))
+        ]));
+    return listItemLayout(cmtWidget);
   }
 }
-

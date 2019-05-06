@@ -7,6 +7,7 @@ import 'package:uitest/net/api.dart';
 ///
 /// auth:wyj date:20190326
 class ThreadDao {
+  static String token='abctoken123';
   //帖子列表
   static list({int page = 1}) async {
     var params = {
@@ -53,5 +54,28 @@ class ThreadDao {
       return tdInfo;
     }
     return tdInfo;
+  }
+
+  /// 发布评论
+  static addComment(int threadId, String comment) async {
+    var params = {
+      "userRequest": {"Token": token, "Plat": Constants.PLATID, "TimeStamp": 0, "Sign": ""},
+      "cmtAddRequest": {
+        "Tid": threadId,
+        "RepPid": 0,
+        "ReplyUid": 0,
+        "Content": comment,
+        "FormId": "",
+        "Star": 0,
+        "Type": 0
+      }
+    };
+    var res = await HttpManager.netPost(
+        HttpManager.API_COMMENT_ADD, params, null, null);
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      return new DataResult(data, true);
+    }
+    return new DataResult(null, false);
   }
 }

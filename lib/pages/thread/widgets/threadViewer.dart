@@ -9,7 +9,7 @@ import 'package:uitest/widgets/triangle.dart';
 
 class ThreadViewer extends StatelessWidget {
   List viewList;
-  var rowCount = 8; //每行几个
+  var rowCount = 10; //每行几个
   ThreadViewer({Key key, this.viewList}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -17,40 +17,46 @@ class ThreadViewer extends StatelessWidget {
     int yu = viewList.length % rowCount; //取余
     int zhen = viewList.length ~/ rowCount; //取整
     var row = yu == 0 ? zhen : zhen + 1; //行数
-    var rowWidget =
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-      Container(
-          margin: EdgeInsets.only(left: 5),
-          child: Triangle(myColor: colorStatusGrey, width: 10, orientation: 1)),
-      Container(
-          margin: EdgeInsets.only(right: 0),
-          decoration: new BoxDecoration(shape: BoxShape.rectangle, boxShadow: [
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(1.0, 1.0),
-                blurRadius: 1.0),
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(-1.0, -1.0),
-                blurRadius: 1.0),
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(1.0, -1.0),
-                blurRadius: 1.0),
-            new BoxShadow(
-                color: colorStatusGrey,
-                offset: Offset(-1.0, 1.0),
-                blurRadius: 1.0),
-          ]),
-          height: 75.0,
-          width: MediaQuery.of(context).size.width - 50,
-          child: ListView.builder(
-            itemBuilder: (_, index) {
-              return getRow(index + 1);
-            },
-            itemCount: row,
-          ))
-    ]);
+    var rowWidget = viewList.length == 0
+        ? Container()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+                Container(
+                    margin: EdgeInsets.only(left: 5),
+                    child: Triangle(
+                        myColor: colorStatusGrey, width: 10, orientation: 1)),
+                Container(
+                    margin: EdgeInsets.only(right: 0),
+                    decoration: new BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        boxShadow: [
+                          new BoxShadow(
+                              color: colorStatusGrey,
+                              offset: Offset(1.0, 1.0),
+                              blurRadius: 1.0),
+                          new BoxShadow(
+                              color: colorStatusGrey,
+                              offset: Offset(-1.0, -1.0),
+                              blurRadius: 1.0),
+                          new BoxShadow(
+                              color: colorStatusGrey,
+                              offset: Offset(1.0, -1.0),
+                              blurRadius: 1.0),
+                          new BoxShadow(
+                              color: colorStatusGrey,
+                              offset: Offset(-1.0, 1.0),
+                              blurRadius: 1.0),
+                        ]),
+                    height: 75.0,
+                    width: MediaQuery.of(context).size.width,
+                    child: ListView.builder(
+                      itemBuilder: (_, index) {
+                        return getRow(index + 1);
+                      },
+                      itemCount: row,
+                    ))
+              ]);
     return rowWidget;
   }
 
@@ -60,9 +66,11 @@ class ThreadViewer extends StatelessWidget {
       if (viewList.length > i) {
         listWidget.add(
           Container(
-            margin: EdgeInsets.only(top: 3, bottom: 3,right:10,left: 2),
-            child:
-                CircleAvatar(backgroundImage: NetworkImage(viewList[i] ?? '')),
+            margin: EdgeInsets.only(top: 3, bottom: 3, right: 5, left: 2),
+            child: viewList[i] == null
+                ? Container()
+                : CircleAvatar(
+                    backgroundImage: NetworkImage(viewList[i] ?? '')),
             height: 30,
             width: 30,
           ),

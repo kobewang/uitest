@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
-import 'package:uitest/widgets/mydialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_qq_bridge/flutter_qq_bridge.dart';
 
