@@ -13,6 +13,7 @@ class ThreadListItemInfo {
   String content;
   int views;
   int likes;
+  int isLike;
   int comments;
   int shares;
   String addtime;
@@ -32,6 +33,7 @@ class ThreadListItemInfo {
       this.content,
       this.views,
       this.likes,
+      this.isLike,
       this.comments,
       this.shares,
       this.addtime,
@@ -52,6 +54,7 @@ class ThreadListItemInfo {
         content: json['Content'],
         views: json['Views'],
         likes: json['Likes'],
+        isLike: json['IsLike'],
         comments: json['Comments'],
         shares: json['Shares'],
         addtime: json['Addtime'],

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/dao/threadDao.dart';
 import 'package:uitest/model/threadInfo.dart';
+import 'package:uitest/pages/thread/add.dart';
+import 'package:uitest/pages/thread/report.dart';
 import 'package:uitest/pages/thread/widgets/authorRow.dart';
+import 'package:uitest/pages/thread/widgets/commentList.dart';
 import 'package:uitest/pages/thread/widgets/nineMap.dart';
 import 'package:uitest/pages/thread/widgets/threadAddr.dart';
 import 'package:uitest/pages/thread/widgets/threadContent.dart';
@@ -25,7 +28,8 @@ class ThreadDetailPage extends StatefulWidget {
 class ThreadDetailPageState extends State<ThreadDetailPage> {
   //参数定义
   ThreadInfo threadInfo;
-  String _commentStr='';
+  List listComment = [];
+  String _commentStr = '';
   @override
   initState() {
     loadData();
@@ -38,31 +42,49 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
     setState(() {
       threadInfo = info;
     });
+    var res = await ThreadDao.listComment(widget.tid);
+    if (res != null) {
+      setState(() {
+        listComment = res.data['Data']['List'];
+      });
+    }
   }
 
   //首页点击事件
   _indexClickEvent() {}
-  _publishClickEvent() {}
+  //发布点击事件
+  _publishClickEvent() {
+    Navigator.of(context).push(new MaterialPageRoute(builder: (_){
+      return ThreadAddPage();
+    }));
+  }
+  
   //拨号点击事件
   _mobileClickEvent() {}
   //评论提交
-  _commentClickEvent() async{
-    if(_commentStr.isEmpty){
+  _commentClickEvent() async {
+    if (_commentStr.isEmpty) {
       MyDialog.showToast('请输入评论内容');
       return;
     }
     MyDialog.showLoading(context, '提交中..');
     var res = await ThreadDao.addComment(widget.tid, _commentStr);
-    if(res!=null){
+    if (res != null) {
       Navigator.of(context).pop();
-      if(res.data['Code']==0) {
+      if (res.data['Code'] == 0) {
         MyDialog.showToast('评论成功');
+        List cmtList = listComment;
+        cmtList.addAll([
+          {'Header': '', 'Name': '我', 'Addtime': '刚刚', 'Content': _commentStr}
+        ]);
         setState(() {
-         cmtBoxShow=false; 
+          cmtBoxShow = false;
+          cmtList = listComment;
         });
+      } else {
+        MyDialog.showToast(res.data['Data']);
       }
     }
-    
   }
 
   @override //以build为界限，以上：(1)参数（2）方法 (3)事件，事件以_开头；以下：界面UI部分
@@ -94,9 +116,16 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                   listItemStatus(),
                   //阅览数
                   listItemViewer(),
+                  //块状间隔
                   listBlockDivider(),
-                  //评论部分
-                  listItemComment()
+                  //评论行
+                  listItemComment(),
+                  //块状间隔
+                  listBlockDivider(),
+                  //举报行
+                  listItemReport(),
+                  //块状间隔
+                  listBlockDivider()
                 ],
               )),
     );
@@ -114,7 +143,7 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                   print('首页');
                 }),
                 bottomMenuItem('发布', 1, () {
-                  print('发布');
+                  _publishClickEvent();
                 }),
                 bottomMenuItem('私信', 1, () {
                   print('私信');
@@ -241,6 +270,7 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
   ///UI-评论
   listItemComment() {
     var cmtWidget = Container(
+        //height: 40,
         padding: EdgeInsets.only(top: 5),
         child: Column(children: <Widget>[
           //表头行
@@ -248,15 +278,18 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text('评论', style: TextStyle(fontSize: 15)),
-              GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      cmtBoxShow = !cmtBoxShow;
-                    });
-                  },
-                  child: Text('发布',
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor, fontSize: 15)))
+              !cmtBoxShow
+                  ? GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          cmtBoxShow = !cmtBoxShow;
+                        });
+                      },
+                      child: Text('发布',
+                          style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 15)))
+                  : commentBth()
             ],
           ),
           Container(margin: EdgeInsets.only(top: 3), child: Divider(height: 1)),
@@ -265,76 +298,126 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
           Container(
               margin: EdgeInsets.only(top: 15, bottom: 15),
               child: !cmtBoxShow
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.note_add,
-                          color: Color(0xff858585),
-                          size: 30,
-                        ),
-                        Text('还没有评论..',
-                            style: TextStyle(
-                                fontSize: 10, color: Color(0xff858585)))
-                      ],
-                    )
-                  : Column(
-                      children: <Widget>[
-                        Container(
-                            padding: EdgeInsets.only(left: 12, right: 12),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xffd3d3d3), width: 1)),
-                            child: TextField(
-                              keyboardType: TextInputType.text,
-                              maxLines: 2,
-                              obscureText: false, //是否隐藏输入
-                              textInputAction: TextInputAction.newline,
-                              onChanged: (val){
-                                _commentStr=val;
-                              },
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "请输入评论内容",
-                                  hintStyle: TextStyle(
-                                      fontSize: 15, color: Color(0xff858585))),
-                            )),
-                        Container(
-                            margin: EdgeInsets.only(top: 5),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  CustomButton(
-                                    text: '取消',
-                                    widthPx: 120,
-                                    heightPx: 50,
-                                    fontSizePx: 20,
-                                    color: Colors.white,
-                                    isOutLine: true,
-                                    fontColor: Colors.black,
-                                    borderColor:  Color(0xff858585),
-                                    onPressed: () {
-                                      setState(() {
-                                        cmtBoxShow = false;
-                                      });
-                                    },
-                                  ),
-                                  Container(
-                                      margin: EdgeInsets.only(left: 10),
-                                      child: CustomButton(
-                                        text: '发表',
-                                        widthPx: 120,
-                                        heightPx: 50,
-                                        fontSizePx: 20,
-                                        onPressed: () {
-                                          _commentClickEvent();
-                                        },
-                                      )),
-                                ])),
-                      ],
-                    ))
+                  ? listComment == null||listComment.length==0
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.note_add,
+                              color: Color(0xff858585),
+                              size: 30,
+                            ),
+                            Text('还没有评论..',
+                                style: TextStyle(
+                                    fontSize: 10, color: Color(0xff858585)))
+                          ],
+                        )
+                      : CommentList(cmtList: listComment)
+                  : Column(children: <Widget>[
+                      Container(
+                          padding: EdgeInsets.only(left: 12, right: 12),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                  color: Color(0xffd3d3d3), width: 1)),
+                          child: TextField(
+                            keyboardType: TextInputType.text,
+                            maxLines: 1,
+                            obscureText: false, //是否隐藏输入
+                            textInputAction: TextInputAction.newline,
+                            onChanged: (val) {
+                              _commentStr = val;
+                            },
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "请输入评论内容",
+                                hintStyle: TextStyle(
+                                    fontSize: 15, color: Color(0xff858585))),
+                          )),
+                    ])),
         ]));
     return listItemLayout(cmtWidget);
+  }
+
+  ///评论操作按钮
+  commentBth() {
+    return Container(
+        margin: EdgeInsets.only(top: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            CustomButton(
+              text: '取消',
+              widthPx: 110,
+              heightPx: 40,
+              fontSizePx: 20,
+              color: Colors.white,
+              isOutLine: true,
+              fontColor: Colors.black,
+              borderColor: Color(0xff858585),
+              onPressed: () {
+                setState(() {
+                  cmtBoxShow = false;
+                });
+              },
+            ),
+            Container(
+                margin: EdgeInsets.only(left: 10),
+                child: CustomButton(
+                  text: '发表',
+                  widthPx: 110,
+                  heightPx: 40,
+                  fontSizePx: 20,
+                  onPressed: () {
+                    _commentClickEvent();
+                  },
+                )),
+          ],
+        ));
+  }
+
+  ///UI-举报行
+  listItemReport() {
+    var reportWidget = Container(
+        padding: EdgeInsets.only(top: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('如遇无效、虚假、诈骗信息，请立即举报',
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor, fontSize: 15)),
+                Text(
+                  '不法分子会通过微信等传播大量诈骗信息，请各位网友知晓并注意防范，不要轻易相信诈骗内容，增强自我防范意识，注意保护好个人隐私及密码保护以防被不法分子所利用。',
+                  style: TextStyle(color: Color(0xff989694), fontSize: 12.5),
+                )
+              ],
+            )),
+            Container(
+                width: 100,
+                child: Column(
+                  children: <Widget>[
+                    Image.asset('images/ic_report.png',
+                        color: Color(0xff57b6e7), width: 50, height: 50),
+                    Text(
+                      '举报',
+                      style: TextStyle(
+                        color: Color(0xff57b6e7),
+                      ),
+                    )
+                  ],
+                ))
+          ],
+        ));
+    return listItemLayout(GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+            return ReportPage(threadId: widget.tid);
+          }));
+        },
+        child: reportWidget));
   }
 }

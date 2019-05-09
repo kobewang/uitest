@@ -14,9 +14,14 @@ class  HttpManager {
   static final String API_GOODS_SEARCH = API_HOST+"/tm/goods/search";
   //static final String API_TM_REG = API_HOST+"/tm/reg";
   static final String API_TM_REG = API_HOST+"/xcxpic/uploadtmreg";
+  static final String API_MENU_LIST = API_HOST+"/public/menu";
+  static final String API_TYPE_LIST = API_HOST+"/thread/type";
   static final String API_THREAD_LIST = API_HOST+"/thread/list";
   static final String API_THREAD_DETAIL= API_HOST+"/thread/detail";
-  static final String API_COMMENT_ADD = API_HOST+"/comments/add";
+  static final String API_THREAD_LIKE= API_HOST+"/thread/like2";
+  static final String API_THREAD_REPORT= API_HOST+"/thread/jubao";
+  static final String API_COMMENT_ADD = API_HOST+"/thread/comments/add2";
+  static final String API_COMMENT_LIST = API_HOST+"/thread/comments/list";
 
   static netPost(url,params,Map<String,String> header, Options option,{noTip = false}) async {
     Map<String,String> headers = new HashMap();

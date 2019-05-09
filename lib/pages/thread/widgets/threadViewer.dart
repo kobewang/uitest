@@ -51,6 +51,7 @@ class ThreadViewer extends StatelessWidget {
                     height: 75.0,
                     width: MediaQuery.of(context).size.width,
                     child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (_, index) {
                         return getRow(index + 1);
                       },

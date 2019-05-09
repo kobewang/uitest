@@ -57,7 +57,7 @@ class ThreadListState extends State<ThreadList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('帖子列表'),
+          title: Text('行业信息'),
           centerTitle: true,
           elevation: 0, //阴影
         ),
