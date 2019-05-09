@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/config/constants.dart';
 import 'package:uitest/dao/threadDao.dart';
+import 'package:uitest/pages/thread/publish.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
 import 'package:uitest/widgets/picker.dart';
@@ -20,7 +21,9 @@ class ThreadAddPageState extends State<ThreadAddPage> {
   Future<void> loadMenu() async {}
 
   //导航点击,加载二级菜单
-  _tabNavClick(int typeId) {}
+  _tabNavClick(int typeId,String typeName) {
+    Navigator.of(context).push(new MaterialPageRoute(builder:(_){return PublishThreadPage(typeId:typeId,typeName:typeName);}));
+  }
   @override
   void initState() {
     loadMenu();
@@ -172,12 +175,18 @@ class ThreadAddPageState extends State<ThreadAddPage> {
                               'https://img.yms.cn/upload/menu/${typeList[index]['IconName']}')),
                       Text(typeName),
                     ]));
+                   
                 return typeList[index]['Father']
                     ? Picker(
                         target: tabIcon,
-                        onConfirm: (PickerItem item) {},
+                        onConfirm: (PickerItem item) {
+                          _tabNavClick(typeId,typeName);
+                        },
                         items: _getPickItems(typeList[index]))
-                    : tabIcon;
+                    : InkWell(
+                      onTap: (){_tabNavClick(typeId,typeName);},
+                      child: Container(margin: EdgeInsets.only(top:14), child: tabIcon)); 
+                    
               },
             ));
   }

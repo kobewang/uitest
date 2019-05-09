@@ -67,7 +67,7 @@ class ThreadViewer extends StatelessWidget {
       if (viewList.length > i) {
         listWidget.add(
           Container(
-            margin: EdgeInsets.only(top: 3, bottom: 3, right: 5, left: 2),
+            margin: EdgeInsets.only(top: 3, bottom: 3, right: 3, left: 2),
             child: viewList[i] == null
                 ? Container()
                 : CircleAvatar(

@@ -2,6 +2,12 @@ class Constants {
   static final String TYPE_SEARCH_HISTORY = 'type_search_history';
   static const int PAGE_SIZE = 20;
   static const int PLATID = 2;
+  ///商圈分类
+  static List areaList =[
+    {"Id":1,"Name":"桐乡濮院"},
+    {"Id":2,"Name":"嘉兴洪合"},
+  ];
+  ///信息分类
   static List typeList = [
     {
       "Id": 1,
@@ -27,24 +33,14 @@ class Constants {
       "Child": []
     },
     {
-      "Id": 4,
-      "Name": "招聘求职",
-      "IconName": "menu-zhaopin.png",
+      "Id": 6,
+      "Name": "原辅料",
+      "IconName": "menu-yuanliao.png",
       "Father": true,
       "Sort": 0,
       "Child": [
-        {"Id": 35, "Name": "招套口", "Sort": 0},
-        {"Id": 36, "Name": "招平车", "Sort": 0},
-        {"Id": 37, "Name": "招操作工", "Sort": 0},
-        {"Id": 38, "Name": "招机修", "Sort": 0},
-        {"Id": 39, "Name": "招横机", "Sort": 0},
-        {"Id": 40, "Name": "招绣花", "Sort": 0},
-        {"Id": 41, "Name": "招临时工", "Sort": 0},
-        {"Id": 42, "Name": "招保姆", "Sort": 0},
-        {"Id": 43, "Name": "招服务员", "Sort": 0},
-        {"Id": 34, "Name": "找工作", "Sort": 0},
-        {"Id": 44, "Name": "求助", "Sort": 0},
-        {"Id": 45, "Name": "其他", "Sort": 0}
+        {"Id": 49, "Name": "供原辅料", "Sort": 0},
+        {"Id": 48, "Name": "找原辅料", "Sort": 0}
       ]
     },
     {
@@ -98,21 +94,31 @@ class Constants {
       ]
     },
     {
-      "Id": 6,
-      "Name": "原辅料",
-      "IconName": "menu-yuanliao.png",
-        "Father": true,
+      "Id": 4,
+      "Name": "招聘求职",
+      "IconName": "menu-zhaopin.png",
+      "Father": true,
       "Sort": 0,
       "Child": [
-        {"Id": 49, "Name": "供原辅料", "Sort": 0},
-        {"Id": 48, "Name": "找原辅料", "Sort": 0}
+        {"Id": 35, "Name": "招套口", "Sort": 0},
+        {"Id": 36, "Name": "招平车", "Sort": 0},
+        {"Id": 37, "Name": "招操作工", "Sort": 0},
+        {"Id": 38, "Name": "招机修", "Sort": 0},
+        {"Id": 39, "Name": "招横机", "Sort": 0},
+        {"Id": 40, "Name": "招绣花", "Sort": 0},
+        {"Id": 41, "Name": "招临时工", "Sort": 0},
+        {"Id": 42, "Name": "招保姆", "Sort": 0},
+        {"Id": 43, "Name": "招服务员", "Sort": 0},
+        {"Id": 34, "Name": "找工作", "Sort": 0},
+        {"Id": 44, "Name": "求助", "Sort": 0},
+        {"Id": 45, "Name": "其他", "Sort": 0}
       ]
     },
     {
       "Id": 7,
       "Name": "餐饮住宿",
       "IconName": "menu-hotel.png",
-        "Father": true,
+      "Father": true,
       "Sort": 0,
       "Child": [
         {"Id": 50, "Name": "美食", "Sort": 0},
