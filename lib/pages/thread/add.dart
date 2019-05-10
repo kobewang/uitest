@@ -22,7 +22,7 @@ class ThreadAddPageState extends State<ThreadAddPage> {
 
   //导航点击,加载二级菜单
   _tabNavClick(int typeId,String typeName) {
-    Navigator.of(context).push(new MaterialPageRoute(builder:(_){return PublishThreadPage(typeId:typeId,typeName:typeName);}));
+    Navigator.of(context).push(new MaterialPageRoute(builder:(_){return ThreadPublishPage(typeId:typeId,typeName:typeName);}));
   }
   @override
   void initState() {

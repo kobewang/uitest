@@ -28,9 +28,9 @@ dependencies:
   event_bus: ^1.0.1 #事件订阅
   shared_preferences: ^0.5.1 #本地存储
   card_settings: ^1.2.5 #卡片表单
-  image_picker: ^0.4.10 #选择图片
+  image_picker: ^0.6.0+3 #选择图片
   json_annotation: ^2.0.0
-  flutter_webview_plugin: ^0.3.1 #网页浏览器
+  flutter_webview_plugin: ^0.3.5 #网页浏览器
   cached_network_image: ^0.7.0
   jmessage_flutter: ^0.0.11 #极光IM
   url_launcher: ^4.0.3 #url唤起
@@ -39,7 +39,7 @@ dependencies:
   flutter_html: ^0.9.6 #富文本
   html: ^0.13.3 #富文本
   photo_view: ^0.3.1 #图片preview
-  fluttertoast: ^2.2.11 #toast弹窗
+  fluttertoast: ^3.0.4 #toast弹窗
   city_pickers: ^0.1.8 #城市联动
 
   #flutter_html_textview: ^0.2.6

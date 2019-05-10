@@ -2,11 +2,24 @@ class Constants {
   static final String TYPE_SEARCH_HISTORY = 'type_search_history';
   static const int PAGE_SIZE = 20;
   static const int PLATID = 2;
+
   ///商圈分类
-  static List areaList =[
-    {"Id":1,"Name":"桐乡濮院"},
-    {"Id":2,"Name":"嘉兴洪合"},
+  static List areaList = [
+    {"Id": 1, "City": "桐乡濮院", "Sort": 0},
+    {"Id": 2, "City": "嘉兴洪合", "Sort": 1},
+    {"Id": 4, "City": "东莞大朗", "Sort": 3},
+    {"Id": 3, "City": "汕头澄海", "Sort": 2},
+    {"Id": 5, "City": "吴江横扇", "Sort": 4},
+    {"Id": 13, "City": "其它", "Sort": 4},
+    {"Id": 6, "City": "广东广州", "Sort": 5},
+    {"Id": 7, "City": "河北清河", "Sort": 6},
+    {"Id": 8, "City": "泉州南安", "Sort": 7},
+    {"Id": 9, "City": "山东海阳", "Sort": 8},
+    {"Id": 10, "City": "鄂尔多斯", "Sort": 9},
+    {"Id": 11, "City": "宁夏领舞", "Sort": 10},
+    {"Id": 12, "City": "张家港塘桥", "Sort": 11}
   ];
+
   ///信息分类
   static List typeList = [
     {

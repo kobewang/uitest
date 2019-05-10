@@ -4,6 +4,7 @@ import 'package:uitest/pages/home.dart';
 import 'package:uitest/pages/share.dart';
 import 'package:uitest/pages/thread/list.dart';
 import 'package:uitest/pages/thread/detail.dart';
+import 'package:uitest/pages/thread/publish.dart';
 import 'package:uitest/pages/typeSearch.dart';
 import 'package:uitest/widgets/barOption.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
       //home:DrawerPage()
       //home:ChatPage(),
       //home:ThreadDetailPage(),
-      home:ThreadList(),
+      //home:ThreadList(),
+      home:ThreadPublishPage(typeId:2,typeName:'成衣供求'),
       //home:SharePage(),
      // home:WebViewPage(title: '测试',url: 'https://www.22.cn'),
       //home:FatherPage(),
