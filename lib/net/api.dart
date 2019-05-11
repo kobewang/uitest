@@ -16,6 +16,8 @@ class  HttpManager {
   static final String API_TM_REG = API_HOST+"/xcxpic/uploadtmreg";
   static final String API_MENU_LIST = API_HOST+"/public/menu";
   static final String API_TYPE_LIST = API_HOST+"/thread/type";
+  static final String API_IMG_UPLOAD = API_HOST+"/xcxpic/upload";
+  static final String API_THREAD_ADD = API_HOST+"/thread/add";
   static final String API_THREAD_LIST = API_HOST+"/thread/list";
   static final String API_THREAD_DETAIL= API_HOST+"/thread/detail";
   static final String API_THREAD_LIKE= API_HOST+"/thread/like2";

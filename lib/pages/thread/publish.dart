@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/config/constants.dart';
+import 'package:uitest/dao/threadDao.dart';
 import 'package:uitest/utils/myDialog.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
@@ -22,18 +25,34 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
   String _contentStr = '';
   String _city;
   int _areaId;
-  List imageList = [];
+  var imgHgt = 120.0;
+  var imgGridHeight = 120.0;
+  int gridLen = 1;
+  List<File> imageList = [];
 
   ///图片上传点击
-  _pickImageClickEvent(BuildContext context) async{
-    if(imageList.length>=9) {
+  _pickImageClickEvent(BuildContext context) async {
+    if (imageList.length >= 9) {
       MyDialog.showToast('上传图片不能超过9张');
       return;
     }
     var img = await Utils.selectImage(context);
-    setState(() {
-      imageList.add(img);
-    });
+    if (img != null) {
+      setState(() {
+        imageList.add(img);
+        //控制GridView的九宫图的自动高度
+        var imgLen = imageList.length;
+        gridLen = imgLen < 9 ? imgLen + 1 : imgLen;
+        if (imgLen < 3) {
+          imgGridHeight = imgHgt;
+        } else if (imgLen >= 3 && imgLen < 6) {
+          imgGridHeight = imgHgt * 2;
+        } else {
+          imgGridHeight = imgHgt * 3;
+        }
+        print(imgGridHeight);
+      });
+    }
   }
 
   ///获取商圈列表
@@ -54,7 +73,22 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
   }
 
   ///提交发布
-  _submitClickEvent() {}
+  _submitClickEvent() async {
+    var threadId = 1;
+    var index = 0;
+    print(imageList.length);
+    imageList.forEach((item) async {
+      await _uploadImg(threadId, index, item);
+      index++;
+    });
+  }
+
+  _uploadImg(int threadId, int index, File imgFile) async {
+    var res =
+        await ThreadDao.uploadImg(threadId, index, imgFile, imgType: 'thread');
+    print(res.data);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +96,7 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
             title: Text('发布${widget.typeName}信息'),
             centerTitle: true,
             elevation: 1),
-        body: Column(
+        body: ListView(
           children: <Widget>[
             rowArea(),
             rowDividerBlock(),
@@ -187,22 +221,26 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
   imageGridView() {
     //最大3*3 9宫图
     var gridView = new Builder(builder: (ctx) {
-      var imgWidth = 80.0;
+      var imgWidth = 60.0;
       return GridView.count(
           crossAxisCount: 3, //分3列显示
-          children: List.generate(imageList.length + 1, (index) {
-            print(index);
+          physics: new NeverScrollableScrollPhysics(),
+          children: List.generate(gridLen, (index) {
+            //print('imageList.length：${imageList.length} index: ${index}');
             var imgChild;
-            if (imageList.length < 9 && index == imageList.length) {
+
+            if (imageList.length < 9 && index == imageList.length ||
+                imageList.length == 0) {
               //最末尾+
               imgChild = InkWell(
-                  onTap: (){
-                  _pickImageClickEvent(ctx);
+                  onTap: () {
+                    _pickImageClickEvent(ctx);
                   },
                   child: Image.asset('images/image_add_btn.png',
                       height: imgWidth, width: imgWidth));
             } else {
-              imgChild = Image.file(imageList[index - 1]);
+              imgChild = Image.file(imageList[index],
+                  width: imgWidth, height: imgWidth, fit: BoxFit.cover);
             }
             return Container(
                 margin: EdgeInsets.all(2.0),
@@ -212,8 +250,7 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
                 child: imgChild);
           }));
     });
-
-    return Container(height: 120, child: gridView);
+    return Container(height: imgGridHeight, child: gridView);
   }
 
   //ui-协议
@@ -239,40 +276,5 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
         },
       ),
     );
-  }
-
-  ///菜单选择
-  buildModalBottomSheet() {
-    /*
-return ListView.separated(
-      itemBuilder: (_, i) {
-        if (i == _appealTypes.length) {
-          return ListTile(
-            title: Center(child: Text("取消")),
-            onTap: () {
-              appealTypeSelectEvent(null);
-              Navigator.of(context).pop();
-            },
-          );
-        }
-        var type = _appealTypes[i];
-        return ListTile(
-          title: Center(child: Text(type)),
-          onTap: () {
-            appealTypeSelectEvent(type);
-            Navigator.of(context).pop();
-          },
-        );
-      },
-      itemCount: Constants.areaList.length + 1,
-      shrinkWrap: true,
-      separatorBuilder: (_, i) {
-        return Divider(
-          height: Utils.getPXSize(context, 1),
-        );
-      },
-    );
-    
-  }*/
   }
 }

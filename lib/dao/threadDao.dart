@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:uitest/config/constants.dart';
 import 'package:uitest/dao/DataResult.dart';
+import 'package:uitest/model/addThreadInfo.dart';
 import 'package:uitest/model/reportInfo.dart';
 import 'package:uitest/model/threadInfo.dart';
 import 'package:uitest/net/api.dart';
@@ -31,6 +35,65 @@ class ThreadDao {
     }
     return new DataResult(null, false);
   }
+
+  ///发布帖子
+  static add(AddThreadInfo addInfo) async {
+    var params = {
+      "userRequest": {
+        "Token": token,
+        "Plat": Constants.PLATID,
+        "TimeStamp": 0,
+        "Sign": ""
+      },
+      "tdAddRequest": {
+        "Type": addInfo.type??0,
+        "Area": addInfo.area??0,
+        "Content": addInfo.content??'',
+        "IsTop": 0,
+        "TopDays": 0,
+        "IsRed": 0,
+        "RedMoney": 0,
+        "RedTotal": 0,
+        "AddCpId": 0,
+        "TopCpId": 0,
+        "Mobile": addInfo.mobile??'',
+        "FormId": "",
+        "Address": addInfo.address??'',
+        "Longitude": addInfo.longitude??0,
+        "Latitude": addInfo.latitude??0
+      }
+    };
+    var res =
+        await HttpManager.netPost(HttpManager.API_THREAD_ADD, params, null, null);
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      return new DataResult(data, true);
+    }
+    return new DataResult(null, false);
+  }
+
+  //上传图片
+  static uploadImg(int linkId,int indexNum,File imgFile,{String imgType:'thread'}) async {
+    var params = FormData.from({
+      "token": token,
+      "plat": Constants.PLATID,
+      "indexNum": indexNum??0,
+      "linkId": linkId??0,      
+      "imgType":imgType,
+      "filename": new UploadFileInfo(imgFile, "${linkId}_$imgType.jpg",
+          contentType: ContentType.parse('image/jpeg')),
+      "files": [imgFile, "${linkId}_$imgType.jpg"]
+    });
+    var res =
+        await HttpManager.netPost(HttpManager.API_IMG_UPLOAD, params, null, null);
+    print(params);
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      return new DataResult(data, true);
+    }
+    return new DataResult(null, false);
+  }
+
   //帖子列表
   static list({int page = 1}) async {
     var params = {
@@ -116,8 +179,6 @@ class ThreadDao {
       "KeyWord": "",
       "PageIndex": 1
     };
-    print(HttpManager.API_COMMENT_LIST + '?tid=' + threadId.toString());
-    print(params);
     var res = await HttpManager.netPost(
         HttpManager.API_COMMENT_LIST + '?tid=' + threadId.toString(),
         params,
