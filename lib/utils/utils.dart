@@ -13,6 +13,11 @@ class Utils {
 
   static double _designWidth = 750.0;
 
+  /// 跳转webview
+  static gotoWebView(String title,String url) {
+
+  }
+
   /// 获取px等比大小
   static double getPXSize(BuildContext context, double size) {
     return size * (MediaQuery.of(context).size.width / _designWidth);

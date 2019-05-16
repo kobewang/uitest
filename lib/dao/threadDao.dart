@@ -7,7 +7,7 @@ import 'package:uitest/model/addThreadInfo.dart';
 import 'package:uitest/model/reportInfo.dart';
 import 'package:uitest/model/threadInfo.dart';
 import 'package:uitest/net/api.dart';
-
+import 'package:image_jpeg/image_jpeg.dart';
 /// 帖子Dao
 ///
 /// auth:wyj date:20190326
@@ -46,9 +46,9 @@ class ThreadDao {
         "Sign": ""
       },
       "tdAddRequest": {
-        "Type": addInfo.type??0,
-        "Area": addInfo.area??0,
-        "Content": addInfo.content??'',
+        "Type": addInfo.type ?? 0,
+        "Area": addInfo.area ?? 0,
+        "Content": addInfo.content ?? '',
         "IsTop": 0,
         "TopDays": 0,
         "IsRed": 0,
@@ -56,15 +56,15 @@ class ThreadDao {
         "RedTotal": 0,
         "AddCpId": 0,
         "TopCpId": 0,
-        "Mobile": addInfo.mobile??'',
+        "Mobile": addInfo.mobile ?? '',
         "FormId": "",
-        "Address": addInfo.address??'',
-        "Longitude": addInfo.longitude??0,
-        "Latitude": addInfo.latitude??0
+        "Address": addInfo.address ?? '',
+        "Longitude": addInfo.longitude ?? 0,
+        "Latitude": addInfo.latitude ?? 0
       }
     };
-    var res =
-        await HttpManager.netPost(HttpManager.API_THREAD_ADD, params, null, null);
+    var res = await HttpManager.netPost(
+        HttpManager.API_THREAD_ADD, params, null, null);
     if (res != null && res.result && res.data.length > 0) {
       var data = res.data;
       return new DataResult(data, true);
@@ -73,19 +73,35 @@ class ThreadDao {
   }
 
   //上传图片
-  static uploadImg(int linkId,int indexNum,File imgFile,{String imgType:'thread'}) async {
+  static uploadImg(int linkId, int indexNum, File imgFile,
+      {String imgType: 'thread'}) async {
+    File uploadFile=imgFile;
+    //图片流
+    var fileBytes = imgFile.readAsBytesSync();
+    if (fileBytes.length > 1024 * 1024) {
+      //1M以上的进行压缩
+      try {
+        String newfile =
+            await ImageJpeg.encodeJpeg(imgFile.path, null, 90, 1360, 1360);
+        if (newfile != null && newfile.isNotEmpty) {
+          fileBytes = File(newfile).readAsBytesSync();
+          uploadFile=File(newfile);
+        }
+      } catch (e) {}
+    }
+    
     var params = FormData.from({
       "token": token,
       "plat": Constants.PLATID,
-      "indexNum": indexNum??0,
-      "linkId": linkId??0,      
-      "imgType":imgType,
-      "filename": new UploadFileInfo(imgFile, "${linkId}_$imgType.jpg",
+      "indexNum": indexNum ?? 0,
+      "linkId": linkId ?? 0,
+      "imgType": imgType,
+      "filename": new UploadFileInfo(uploadFile, "${linkId}_${imgType}_${indexNum}.jpg",
           contentType: ContentType.parse('image/jpeg')),
-      "files": [imgFile, "${linkId}_$imgType.jpg"]
+      "files": [uploadFile, "${linkId}_${imgType}_${indexNum}.jpg"]
     });
-    var res =
-        await HttpManager.netPost(HttpManager.API_IMG_UPLOAD, params, null, null);
+    var res = await HttpManager.netPost(
+        HttpManager.API_IMG_UPLOAD, params, null, null);
     print(params);
     if (res != null && res.result && res.data.length > 0) {
       var data = res.data;

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:uitest/pages/detail.dart';
 import 'package:uitest/pages/home.dart';
+import 'package:uitest/pages/member/login.dart';
+import 'package:uitest/pages/member/user.dart';
 import 'package:uitest/pages/share.dart';
+import 'package:uitest/pages/thread/add.dart';
 import 'package:uitest/pages/thread/list.dart';
 import 'package:uitest/pages/thread/detail.dart';
 import 'package:uitest/pages/thread/publish.dart';
@@ -35,7 +38,10 @@ class MyApp extends StatelessWidget {
       //home:ChatPage(),
       //home:ThreadDetailPage(),
       //home:ThreadList(),
-      home:ThreadPublishPage(typeId:2,typeName:'成衣供求'),
+      //home:ThreadPublishPage(typeId:2,typeName:'成衣供求'),
+      //home:ThreadAddPage(),
+      //home:UserPage(),
+      home:LoginPage(),
       //home:SharePage(),
      // home:WebViewPage(title: '测试',url: 'https://www.22.cn'),
       //home:FatherPage(),

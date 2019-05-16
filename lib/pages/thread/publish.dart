@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/config/constants.dart';
 import 'package:uitest/dao/threadDao.dart';
+import 'package:uitest/model/addThreadInfo.dart';
+import 'package:uitest/pages/layout/result.dart';
+import 'package:uitest/utils/myDialog.dart';
 import 'package:uitest/utils/myDialog.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
+import 'package:uitest/widgets/customCheckBox.dart';
 import 'package:uitest/widgets/picker.dart';
 
 /// auth:wyj
@@ -24,10 +28,11 @@ class ThreadPublishPage extends StatefulWidget {
 class ThreadPublishPageState extends State<ThreadPublishPage> {
   String _contentStr = '';
   String _city;
-  int _areaId;
+  int _areaId = 0;
   var imgHgt = 120.0;
   var imgGridHeight = 120.0;
   int gridLen = 1;
+  var isAgree = false;
   List<File> imageList = [];
 
   ///图片上传点击
@@ -74,19 +79,57 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
 
   ///提交发布
   _submitClickEvent() async {
-    var threadId = 1;
-    var index = 0;
-    print(imageList.length);
-    imageList.forEach((item) async {
-      await _uploadImg(threadId, index, item);
-      index++;
-    });
+    if (!isAgree) {
+      MyDialog.showToast('请先同意发布条款');
+      return;
+    }
+    if (_areaId == 0) {
+      MyDialog.showToast('请选择商圈');
+      return;
+    }
+    if (_contentStr.isEmpty) {
+      MyDialog.showToast('请输入发布内容');
+      return;
+    }
+
+    AddThreadInfo addInfo =
+        new AddThreadInfo(type: widget.typeId, content: _contentStr);
+    MyDialog.showLoading(context, '正在提交中..');
+    var res = await ThreadDao.add(addInfo);
+    if (res == null) {
+      MyDialog.showToast('提交失败');
+      return;
+    }
+    if (res.data['Code'] != 0) {
+      Navigator.of(context).pop();
+      MyDialog.showAlert(context, res.data['Header']['ErrorMessage']);
+      return;
+    }
+    var threadId = res.data['Data']['Tid'];
+    if (imageList.length > 0) {
+      for (int i = 0; i < imageList.length; i++) {
+        await _uploadImg(threadId, i, imageList[i]);
+      }
+    } else {
+      Navigator.of(context).pop();
+      MyDialog.showToast('提交成功');
+      Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
+        return ResultPage(resultState: true, tipStr: '提交成功，请等待审核处理');
+      }));
+    }
   }
 
   _uploadImg(int threadId, int index, File imgFile) async {
     var res =
         await ThreadDao.uploadImg(threadId, index, imgFile, imgType: 'thread');
     print(res.data);
+    if (index == imageList.length - 1) {
+      Navigator.of(context).pop();
+      MyDialog.showToast('图片上传完成');
+      Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
+        return ResultPage(resultState: true, tipStr: '提交成功，请等待审核处理');
+      }));
+    }
   }
 
   @override
@@ -124,7 +167,9 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
   rowArea() {
     var title = '请选择商圈';
     var rowWidget = Container(
-        padding: EdgeInsets.only(left: 10, right: 10),
+        padding: EdgeInsets.only(
+            left: Utils.getPXSize(context, 40),
+            right: Utils.getPXSize(context, 40)),
         height: Utils.getPXSize(context, 100),
         width: MediaQuery.of(context).size.width,
         child: Row(
@@ -255,8 +300,41 @@ class ThreadPublishPageState extends State<ThreadPublishPage> {
 
   //ui-协议
   rowRule() {
+    var fontSize=15.0;
     return Container(
-        height: Utils.getPXSize(context, 100), child: Text('同意协议'));
+        padding: EdgeInsets.all(
+          Utils.getPXSize(context, 40),
+        ),
+        child: Row(children: <Widget>[
+          Container(
+              margin: EdgeInsets.only(right: 10),
+              child: CustomCheckBox(
+                value: !isAgree,
+                onTap: () {
+                  setState(() {
+                    isAgree = !isAgree;
+                  });
+                },
+              )),
+          InkWell(
+              onTap: () {
+                setState(() {
+                  isAgree = !isAgree;
+                });
+              },
+              child: Text(
+                "我同意条款，保证合法合规",
+                style: TextStyle(fontSize: fontSize)
+              )),
+          Container(
+              margin: EdgeInsets.only(left: 10),
+              child: InkWell(
+                  onTap: () {
+                    Utils.gotoWebView('信息发布协议', Constants.URL_PUBLISH_RULE);
+                  },
+                  child:
+                      Text('《信息发布协议》', style: TextStyle(color: Colors.blue,fontSize: fontSize))))
+        ]));
   }
 
   //ui-按钮
