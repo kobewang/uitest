@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Utils {
+  static double _designWidth = 750.0;
   static String FormateType(int typeId) {
     if (typeId < 10)
       return '0' + typeId.toString();
@@ -11,7 +12,13 @@ class Utils {
       return typeId.toString();
   }
 
-  static double _designWidth = 750.0;
+  /// 判断手机号
+  static bool isMobile(String mobileNum){
+    RegExp exp=new RegExp(r"^1[3,5,7,8,4]\d{9}$");
+    if(!exp.hasMatch(mobileNum))
+      return false;
+    return true;
+  }
 
   /// 跳转webview
   static gotoWebView(String title,String url) {

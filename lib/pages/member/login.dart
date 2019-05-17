@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:uitest/dao/userDao.dart';
 import 'package:uitest/utils/myDialog.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
 import 'package:uitest/widgets/customInput.dart';
 import 'package:uitest/widgets/verificationCodeButton.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 
 /// auth:wyj
-/// desc:登录页
+/// desc:登录页,登录逻辑：先输入手机号，点击获取验证码，去接口请求该手机号是否已经注册，
+///     (1)手机号未注册，则发送验证码，验证码成功后，显示使用微信一键登录按钮
+///     (2)手机号已注册，则直接显示使用微信一键登录
 /// date:20190516
 class LoginPage extends StatefulWidget {
   @override
@@ -16,78 +20,108 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   bool isMobilePanel = true;
+  var mid = 0; //短信MID
+  var token = '';
   TextEditingController _phoneController = new TextEditingController();
   TextEditingController _codeController = new TextEditingController();
-  //获取验证码
-  Future<bool> _getPhoneCode() async {
+  @override
+  void initState() {
+    super.initState();
+    var respCode = "";
+    fluwx.responseFromAuth.listen((response) {
+      setState(() {
+        respCode = response.code;
+        _getAcessToken(respCode);
+      });
+    });
+  }
+
+  ///获取accesstoken
+  _getAcessToken(respCode) async {
+    var res = await UserDao.wxOauth(respCode,token);
+  }
+
+  ///手机号检测
+  _mobileCheck() {
     var mobile = _phoneController.text;
     if (mobile == null || mobile == "") {
       MyDialog.showToast("手机号不能为空");
       return false;
     }
-    setState(() {
-      isMobilePanel = false;
-    });
-    return false;
-    //判断是否绑定微信，未绑定：获取验证码然后绑定微信登录
-    //已绑定微信：直接授权微信登录
+    if (!Utils.isMobile(mobile)) {
+      MyDialog.showToast("手机输入不正确");
+      return false;
+    }
+  }
 
-    /*
-    try {
-      var sendResponse = await DomainPlusApi.sendLoginSmsVeryCode(mobile);
+  //获取验证码
+  Future<bool> _getPhoneCode() async {
+    _mobileCheck();
+    var mobile = _phoneController.text;
+    var res = await UserDao.mobileExist(mobile);
+    if (res == null) {
+      MyDialog.showToast("网络失败请重试");
+      return false;
+    }
+    if (res.data['Code'] == 0) {
+      //手机号已存在，显示微信登录
+      setState(() {
+        isMobilePanel = false;
+      });
+      return false;
+    }
+    //发送登录验证码
+    MyDialog.showLoading(context, '加载中');
+    res = await UserDao.getMobileCode(mobile);
+    if (res != null) {
       Navigator.of(context).pop();
-      if (sendResponse == null) {
-        Utils.showMsg("验证码获取失败");
+      if (res.data['Code'] != 0) {
+        MyDialog.showAlert(context, res.data['Header']['ErrorMessage']);
         return false;
       }
-      if (sendResponse.success()) {
-        isSendCode = true;
-        return true;
-      }
-      if (sendResponse.code == "100011") {
-        //激活弹窗
-        Utils.showAlert(
-          context,
-          null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "您是否为名优金融用户？",
-                style: TextStyle(
-                  color: Color(0xff555555),
-                  fontSize: Utils.getPXSize(context, 30),
-                ),
-              ),
-              Text(
-                "名优金融用户可免注册直接激活账户后使用",
-                style: TextStyle(
-                  color: Color(0xff555555),
-                  fontSize: Utils.getPXSize(context, 30),
-                ),
-              ),
-            ],
-          ),
-          childHeight: Utils.getPXSize(context, 200),
-          okLabel: "是，去激活",
-          ok: () {
-            Navigator.of(context).pushNamed("/login/activate");
-          },
-          cancelLabel: "否",
-        );
-        return false;
-      }
-      Utils.showMsg(sendResponse.msg ?? "验证码获取失败");
-    } catch (e) {
-      Navigator.of(context).pop();
-      Utils.showMsg("验证码获取失败");
+      MyDialog.showToast('已发送到手机');
+      mid = res.data['Data']['Mid'];
+      return true;
     }
     return false;
-    */
+  }
+
+  ///微信登录
+  _loginWechat() {
+    MyDialog.showToast('正在打开微信.');
+    fluwx.sendAuth(scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
   }
 
   ///提交登录
-  _submitLogin() {}
+  _submitLogin() async {
+    _mobileCheck();
+    var mobile = _phoneController.text;
+    String vcode = _codeController.text;
+    if (vcode.isEmpty || mid == 0) {
+      MyDialog.showToast("请获取验证码");
+      return;
+    }
+    MyDialog.showLoading(context, '提交中.');
+    var res = await UserDao.mobileBind(mobile, vcode, mid);
+    if (res != null) {
+      Navigator.of(context).pop();
+      if (res.data['Code'] != 0)
+        MyDialog.showAlert(context, res.data['Header']['ErrorMessage']);
+      else {
+        var directLogin = res.data['Data']['DirectLogin'];
+        token = res.data['Data']['Token'];
+        if (directLogin == 0) {
+          //续要绑定微信
+          setState(() {
+            isMobilePanel = false;
+          });
+        }else {
+          //直接登录
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,16 +205,23 @@ class LoginPageState extends State<LoginPage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top:80.0),
-                child:
-              Image.asset('images/login_icon_wechat.png'),width: 120,height: 120,),
-              Text('点击微信一键登录',
-                  style: TextStyle(
-                    color: Color.fromRGBO(153, 153, 153, 1.0),
-                    fontSize: Utils.getPXSize(context, 30.0),
-                    height: 1.5,
-                  ))
+              InkWell(
+                  onTap: () {
+                    _loginWechat();
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 80.0),
+                    child: Image.asset('images/login_icon_wechat.png'),
+                    width: 120,
+                    height: 120,
+                  )),
+              CustomButton(
+                text: "微信一键登录",
+                onPressed: () {
+                  _loginWechat();
+                },
+                widthPx: 580,
+              ),
             ],
           ),
         ));

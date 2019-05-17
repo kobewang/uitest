@@ -15,6 +15,7 @@ class  HttpManager {
   //static final String API_TM_REG = API_HOST+"/tm/reg";
   static final String API_TM_REG = API_HOST+"/xcxpic/uploadtmreg";
   static final String API_APP_VERSION = API_HOST+"/public/appversion";
+  ///帖子相关
   static final String API_MENU_LIST = API_HOST+"/public/menu";
   static final String API_TYPE_LIST = API_HOST+"/thread/type";
   static final String API_IMG_UPLOAD = API_HOST+"/xcxpic/upload";
@@ -25,6 +26,12 @@ class  HttpManager {
   static final String API_THREAD_REPORT= API_HOST+"/thread/jubao";
   static final String API_COMMENT_ADD = API_HOST+"/thread/comments/add2";
   static final String API_COMMENT_LIST = API_HOST+"/thread/comments/list";
+  ///用户相关
+  static final String API_USER_WX_LOGIN =API_HOST+'/user/wx/login';
+  static final String API_USER_MOBILE_EXIST =API_HOST+'/user/mobile/exist';
+  static final String API_USER_GET_VCODE = API_HOST+'/user/getmcode';
+  static final String API_USER_BIND_MOBILE = API_HOST + '/user/mobilebind';
+
 
   static netPost(url,params,Map<String,String> header, Options option,{noTip = false}) async {
     Map<String,String> headers = new HashMap();
