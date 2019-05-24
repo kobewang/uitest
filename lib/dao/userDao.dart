@@ -1,5 +1,10 @@
+import 'package:redux/redux.dart';
 import 'package:uitest/config/constants.dart';
+import 'package:uitest/config/localStorage.dart';
+import 'package:uitest/model/userInfo.dart';
 import 'package:uitest/net/api.dart';
+import 'package:uitest/redux/actions/userinfoAction.dart';
+import 'package:uitest/redux/models/appstate.dart';
 import 'DataResult.dart';
 
 /// 用户Dao
@@ -82,7 +87,6 @@ class UserDao {
       "Vcode": vcode,
       "Mcode": mCode
     };
-    print('params:${params}');
     var res = await HttpManager.netPost(
         HttpManager.API_USER_BIND_MOBILE, params, null, null);
     if (res != null && res.result && res.data.length > 0) {
@@ -90,5 +94,32 @@ class UserDao {
       return new DataResult(data, true);
     }
     return new DataResult(null, false);
+  }
+
+  static getUserInfo(String token) async {
+    UserInfo userInfo;
+    var params = {
+      "Token": token,
+      "Plat": Constants.PLATID,
+      "TimeStamp": 0,
+      "Sign": ""
+    };
+    var res = await HttpManager.netPost(
+        HttpManager.API_USER_GET_INFO, params, null, null);
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      userInfo=UserInfo.fromJson(data['Data']);
+      return userInfo;
+    }
+    return userInfo;
+  }
+  ///更新用户信息
+  static refreshUserInfo(Store<AppState> store,String token) async {
+    await LocalStorage.setUserToken(token);
+    var userInfo= await getUserInfo(token);
+    if(store!=null) {
+      store.dispatch(UserInfoAction(userInfo:userInfo));
+    }
+    //发送极光注册ID
   }
 }

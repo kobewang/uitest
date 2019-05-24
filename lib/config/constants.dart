@@ -5,6 +5,7 @@ class Constants {
   static const String URL_PUBLISH_RULE='https://www.www.cn'; //发布协议
   static const String DEFAULT_HEAD_IMG="https://img.yms.cn/upload/head/ic_avatar_default.png";//默认头像
   static const String APP_LOGO='https://img.yms.cn/upload/public/vmslogo.png'; //APPlogo
+  static const String APP_PACKAGE_NAME='cn.yms';//app包名
   static const String COMPANY_NAME='微毛衫'; //公司名
   static const String COMPANY_PHONE=''; //官方电话
   static const String COMPANY_QQ=''; //官方QQ
@@ -13,6 +14,7 @@ class Constants {
   static const String APP_VERSION_IOS='v1.0.0'; //ios版本号
   static const String APP_VERSION_ANDROID='v1.0.0'; //安卓版本名称
   static const int APP_VERSION_ANDROID_CODE=99; //安卓版本号
+
 
   ///商圈分类
   static List areaList = [

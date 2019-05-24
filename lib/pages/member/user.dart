@@ -1,9 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:uitest/config/constants.dart';
+import 'package:uitest/config/localStorage.dart';
+import 'package:uitest/model/userInfo.dart';
 import 'package:uitest/pages/member/integral.dart';
+import 'package:uitest/pages/member/login.dart';
 import 'package:uitest/pages/member/profile.dart';
 import 'package:uitest/pages/thread/mylist.dart';
+import 'package:uitest/redux/actions/userinfoAction.dart';
+import 'package:uitest/redux/models/appstate.dart';
 import 'package:uitest/utils/utils.dart';
 
 import '../about.dart';
@@ -19,19 +25,35 @@ class UserPage extends StatefulWidget {
 
 class UserPageState extends State<UserPage> {
   var iconW = 30.0;
-  gotoClick(String title) {
+  //登录点击
+  _loginClick() {
+    Navigator.of(context).push(new MaterialPageRoute(builder:(_){
+      return LoginPage();
+    }));
+  }
+  //listitem点击
+  _gotoClick(String title,UserInfo userInfo) {
     switch (title) {
       case 'mylist':
-        Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
+        if(userInfo==null)
+          _loginClick();
+        else 
+          Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
           return MyThreadList();
         }));
         break;
       case 'profile':
+      if(userInfo==null)
+          _loginClick();
+        else 
         Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
           return ProfilePage();
         }));
         break;
       case 'integral':
+      if(userInfo==null)
+          _loginClick();
+        else 
         Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
           return IntegralPage();
         }));
@@ -48,10 +70,22 @@ class UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+    StoreConnector<AppState,UserInfo>(
+      onInit: (store){
+            //初始获取一次信息
+        LocalStorage.getUserInfo().then((u) {
+        store.dispatch(UserInfoAction(userInfo: u));
+      });
+      },
+      converter:(store){
+        return store.state.userInfo;
+      },
+      builder: (_,userInfo){
+        return   Scaffold(
       body: ListView(
         children: <Widget>[
-          listHead(),
+          listHead(userInfo),
           listBlock(),
           listItem(
               Image.asset(
@@ -61,7 +95,7 @@ class UserPageState extends State<UserPage> {
                 color: Theme.of(context).primaryColor,
               ),
               '我发布的', () {
-            gotoClick('mylist');
+            _gotoClick('mylist',userInfo);
           }),
           listDivider(),
           listItem(
@@ -71,10 +105,12 @@ class UserPageState extends State<UserPage> {
                 color: Colors.orange,
               ),
               '我的积分', () {
-            gotoClick('integral');
+            _gotoClick('integral',userInfo);
           }),
           listDivider(),
-          listItem(Icon(Icons.settings, size: iconW), '设置中心', () {}),
+          listItem(Icon(Icons.settings, size: iconW), '设置中心', () {
+              _gotoClick('profile',userInfo);
+          }),
           listDivider(),
           listItem(
               Icon(
@@ -83,7 +119,7 @@ class UserPageState extends State<UserPage> {
                 color: Colors.green,
               ),
               '邀请好友', () {
-            gotoClick('share');
+            _gotoClick('share',userInfo);
           }),
           listDivider(),
           listItem(
@@ -93,16 +129,19 @@ class UserPageState extends State<UserPage> {
                 color: Colors.blueGrey,
               ),
               '关于我们', () {
-            gotoClick('about');
+            _gotoClick('about',userInfo);
           }),
         ],
       ),
     );
+      },
+    );
+  
   }
 
   //ui-head
-  listHead() {
-    return Container(
+  listHead(UserInfo userInfo) {
+    var headRow= Container(
       height: Utils.getPXSize(context, 220),
       width: MediaQuery.of(context).size.width,
       color: Theme.of(context).primaryColor,
@@ -129,23 +168,26 @@ class UserPageState extends State<UserPage> {
                 height: 60,
                 width: 60,
                 child: CircleAvatar(
-                    backgroundImage: NetworkImage(Constants.DEFAULT_HEAD_IMG))),
+                    backgroundImage:  NetworkImage(userInfo?.headImg??Constants.DEFAULT_HEAD_IMG))),
             Container(
                 margin: EdgeInsets.only(left: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Kobewang', style: TextStyle(color: Colors.white)),
+                    Text(userInfo?.name??'您好', style: TextStyle(color: Colors.white)),
                     Container(
                         margin: EdgeInsets.only(top: 5),
                         child:
-                            Text('普通会员', style: TextStyle(color: Colors.white)))
+                            Text(userInfo?.grade??'点击头像登录', style: TextStyle(color: Colors.white)))
                   ],
                 ))
           ],
         )
       ]),
     );
+    return InkWell(child: headRow,onTap: (){
+     _loginClick();
+    });
   }
 
   //ui-listitem

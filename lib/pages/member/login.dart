@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uitest/dao/userDao.dart';
+import 'package:uitest/pages/member/user.dart';
 import 'package:uitest/utils/myDialog.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/CustomButton.dart';
 import 'package:uitest/widgets/customInput.dart';
 import 'package:uitest/widgets/verificationCodeButton.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
+import 'package:uitest/redux/models/appstate.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
 
 /// auth:wyj
 /// desc:登录页,登录逻辑：先输入手机号，点击获取验证码，去接口请求该手机号是否已经注册，
@@ -22,23 +26,60 @@ class LoginPageState extends State<LoginPage> {
   bool isMobilePanel = true;
   var mid = 0; //短信MID
   var token = '';
+  var weChatAuthListen;
+  Store<AppState> _initStore;
   TextEditingController _phoneController = new TextEditingController();
   TextEditingController _codeController = new TextEditingController();
   @override
   void initState() {
     super.initState();
-    var respCode = "";
-    fluwx.responseFromAuth.listen((response) {
-      setState(() {
-        respCode = response.code;
-        _getAcessToken(respCode);
-      });
-    });
+    weChatAuthListen = fluwx.responseFromAuth.listen(wechatAuthResponse);
+  }
+  @override
+  void dispose() {
+    weChatAuthListen?.cancel();
+    super.dispose();
+  }
+  ///微信登录返回
+  void wechatAuthResponse(fluwx.WeChatAuthResponse wechatAuthResponse) async {
+    if (wechatAuthResponse?.errCode != 0) {
+      MyDialog.showAlert(context, wechatAuthResponse?.errStr ?? "微信登录失败");
+      return;
+    }
+    _getAcessToken(wechatAuthResponse.code);
+    /*
+    var rep = await UserDao.weixinCallback(wechatAuthResponse.code);
+    if (rep == null || rep?.msg != "success") {
+      Utils.showMsg(rep?.msg ?? "微信登录失败");
+      return;
+    }
+    //已经绑定的，登录信息
+    var token = rep.data["token"]?.toString() ?? "";
+    if (rep?.msg == "success" && token != null && token.isNotEmpty) {
+      //登录成功
+      await _loginSuccess(_initStore, token);
+
+      print(token);
+      return;
+    }
+    var backInfo = WeiXinCallBackInfo.fromJson(rep.data);
+    if (backInfo == null) {
+      Utils.showMsg("微信登录信息获取失败");
+      return;
+    }
+ */
   }
 
   ///获取accesstoken
   _getAcessToken(respCode) async {
-    var res = await UserDao.wxOauth(respCode,token);
+    var res = await UserDao.wxOauth(respCode, token);
+    if (res != null) {
+      if (res.data['Code'] == 0) {
+        token = res.data['Data'].toString();
+      } else {
+        MyDialog.showToast('微信登录回调失败');
+      }
+    }
   }
 
   ///手机号检测
@@ -93,7 +134,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   ///提交登录
-  _submitLogin() async {
+  _submitLogin(Store<AppState> store) async {
     _mobileCheck();
     var mobile = _phoneController.text;
     String vcode = _codeController.text;
@@ -115,37 +156,61 @@ class LoginPageState extends State<LoginPage> {
           setState(() {
             isMobilePanel = false;
           });
-        }else {
+        } else {
           //直接登录
+          await _loginSuccess(store, token);
         }
       }
     }
   }
 
+  ///登录成功
+  _loginSuccess(Store<AppState> store, String token) async {
+    UserDao.refreshUserInfo(store, token);
+    //跳转返回
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).push(new MaterialPageRoute(builder: (_){return UserPage();}));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text('登录'), centerTitle: true, elevation: 1.0),
-        body: ListView(
-          children: <Widget>[
-            Center(
-              child: Container(
-                  padding: EdgeInsets.all(Utils.getPXSize(context, 30.0)),
-                  margin: EdgeInsets.only(top: Utils.getPXSize(context, 80.0)),
-                  width: Utils.getPXSize(context, 680),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: Theme.of(context).primaryColor, width: 1.0)),
-                  child: isMobilePanel ? mobilePanel() : wechatPanel()),
-            ),
-          ],
-        ));
+    return StoreConnector<AppState, Store<AppState>>(
+      onInit: (store) {
+        _initStore = store;
+      },
+      builder: (_, store) {
+        return Scaffold(
+            appBar:
+                AppBar(title: Text('登录'), centerTitle: true, elevation: 1.0),
+            body: ListView(
+              children: <Widget>[
+                Center(
+                  child: Container(
+                      padding: EdgeInsets.all(Utils.getPXSize(context, 30.0)),
+                      margin:
+                          EdgeInsets.only(top: Utils.getPXSize(context, 80.0)),
+                      width: Utils.getPXSize(context, 680),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: Theme.of(context).primaryColor,
+                              width: 1.0)),
+                      child:
+                          isMobilePanel ? mobilePanel(store) : wechatPanel()),
+                ),
+              ],
+            ));
+      },
+      converter: (store) => store,
+    );
   }
 
   //ui-短信验证登录
-  mobilePanel() {
+  mobilePanel(Store<AppState> store) {
     return Column(
       children: <Widget>[
         Container(
@@ -189,7 +254,7 @@ class LoginPageState extends State<LoginPage> {
           child: CustomButton(
             text: "登录",
             onPressed: () {
-              _submitLogin();
+              _submitLogin(store);
             },
             widthPx: 580,
           ),
@@ -222,6 +287,7 @@ class LoginPageState extends State<LoginPage> {
                 },
                 widthPx: 580,
               ),
+              Text(token)
             ],
           ),
         ));

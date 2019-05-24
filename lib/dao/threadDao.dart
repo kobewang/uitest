@@ -8,11 +8,13 @@ import 'package:uitest/model/reportInfo.dart';
 import 'package:uitest/model/threadInfo.dart';
 import 'package:uitest/net/api.dart';
 import 'package:image_jpeg/image_jpeg.dart';
+
 /// 帖子Dao
 ///
 /// auth:wyj date:20190326
 class ThreadDao {
-  static String token = 'abctoken123';
+  static String token =
+      '021d286691e3e78922b8d06a7e92e9927dd446cfd79c91133573dfb068093f09';
 
   /// 菜单
   static menuList() async {
@@ -75,7 +77,7 @@ class ThreadDao {
   //上传图片
   static uploadImg(int linkId, int indexNum, File imgFile,
       {String imgType: 'thread'}) async {
-    File uploadFile=imgFile;
+    File uploadFile = imgFile;
     //图片流
     var fileBytes = imgFile.readAsBytesSync();
     if (fileBytes.length > 1024 * 1024) {
@@ -85,18 +87,19 @@ class ThreadDao {
             await ImageJpeg.encodeJpeg(imgFile.path, null, 90, 1360, 1360);
         if (newfile != null && newfile.isNotEmpty) {
           fileBytes = File(newfile).readAsBytesSync();
-          uploadFile=File(newfile);
+          uploadFile = File(newfile);
         }
       } catch (e) {}
     }
-    
+
     var params = FormData.from({
       "token": token,
       "plat": Constants.PLATID,
       "indexNum": indexNum ?? 0,
       "linkId": linkId ?? 0,
       "imgType": imgType,
-      "filename": new UploadFileInfo(uploadFile, "${linkId}_${imgType}_${indexNum}.jpg",
+      "filename": new UploadFileInfo(
+          uploadFile, "${linkId}_${imgType}_${indexNum}.jpg",
           contentType: ContentType.parse('image/jpeg')),
       "files": [uploadFile, "${linkId}_${imgType}_${indexNum}.jpg"]
     });
@@ -120,7 +123,12 @@ class ThreadDao {
         "KeyWord": "",
         "PageIndex": page
       },
-      "userRequest": {"Token": "", "Plat": 0, "TimeStamp": 0, "Sign": ""},
+      "userRequest": {
+        "Token": "",
+        "Plat": Constants.PLATID,
+        "TimeStamp": 0,
+        "Sign": ""
+      },
       "tdListRequest": {
         "Type": 0,
         "Area": 0,
@@ -140,10 +148,42 @@ class ThreadDao {
     return new DataResult(null, false);
   }
 
+  //我的帖子列表
+  static myList({int page = 1}) async {
+    var params = {
+      "pageRequest": {
+        "LastId": 0,
+        "PageSize": Constants.PAGE_SIZE,
+        "Sort": "",
+        "KeyWord": "",
+        "PageIndex": page
+      },
+      "userRequest": {
+        "Token": token,
+        "Plat": Constants.PLATID,
+        "TimeStamp": 0,
+        "Sign": ""
+      },
+      "mylistRequest": {"AuditStatus": -2, "KeyWord": ""}
+    };
+    var res = await HttpManager.netPost(
+        HttpManager.API_THREAD_MY_LIST, params, null, null);
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      return new DataResult(data, true);
+    }
+    return new DataResult(null, false);
+  }
+
   /// 帖子详情
   static Future<ThreadInfo> detail(int threadId) async {
     ThreadInfo tdInfo;
-    var params = {"Token": "", "Plat": 0, "TimeStamp": 0, "Sign": ""};
+    var params = {
+      "Token": "",
+      "Plat": Constants.PLATID,
+      "TimeStamp": 0,
+      "Sign": ""
+    };
     print(HttpManager.API_THREAD_DETAIL + '?Id=' + threadId.toString());
     var res = await HttpManager.netPost(
         HttpManager.API_THREAD_DETAIL + '?Id=' + threadId.toString(),
@@ -156,6 +196,26 @@ class ThreadDao {
       return tdInfo;
     }
     return tdInfo;
+  }
+
+  ///完成(删除)帖子
+  static finish(int threadId) async {
+    var params = {
+      "userRequest": {
+        "Token": token,
+        "Plat": Constants.PLATID,
+        "TimeStamp": 0,
+        "Sign": ""
+      },
+      "Id": threadId
+    };
+    var res = await HttpManager.netPost(
+        HttpManager.API_THREAD_FINISH, params, null, null);
+    if (res != null && res.result && res.data.length > 0) {
+      var data = res.data;
+      return new DataResult(data, true);
+    }
+    return new DataResult(null, false);
   }
 
   /// 发布评论

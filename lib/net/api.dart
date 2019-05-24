@@ -20,17 +20,22 @@ class  HttpManager {
   static final String API_TYPE_LIST = API_HOST+"/thread/type";
   static final String API_IMG_UPLOAD = API_HOST+"/xcxpic/upload";
   static final String API_THREAD_ADD = API_HOST+"/thread/add";
+  static final String API_THREAD_FINISH = API_HOST+"/thread/finish";
   static final String API_THREAD_LIST = API_HOST+"/thread/list";
+  static final String API_THREAD_MY_LIST = API_HOST+"/thread/my";
   static final String API_THREAD_DETAIL= API_HOST+"/thread/detail";
   static final String API_THREAD_LIKE= API_HOST+"/thread/like2";
   static final String API_THREAD_REPORT= API_HOST+"/thread/jubao";
   static final String API_COMMENT_ADD = API_HOST+"/thread/comments/add2";
   static final String API_COMMENT_LIST = API_HOST+"/thread/comments/list";
+  ///财务相关
+  static final String API_FINANCE_LIST= API_HOST+"/finance/list";
   ///用户相关
   static final String API_USER_WX_LOGIN =API_HOST+'/user/wx/login';
   static final String API_USER_MOBILE_EXIST =API_HOST+'/user/mobile/exist';
   static final String API_USER_GET_VCODE = API_HOST+'/user/getmcode';
   static final String API_USER_BIND_MOBILE = API_HOST + '/user/mobilebind';
+  static final String API_USER_GET_INFO = API_HOST + '/user/info';
 
 
   static netPost(url,params,Map<String,String> header, Options option,{noTip = false}) async {
@@ -48,6 +53,8 @@ class  HttpManager {
     option.connectTimeout = 15000;
     Dio dio = new Dio();
     Response response;
+    print(url);
+    print(params);
     try {
       response = await dio.post(url, data:params, options:option);
     } on DioError catch (e) {

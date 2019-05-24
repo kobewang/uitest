@@ -47,7 +47,7 @@ class ThreadAuthorRow extends StatelessWidget {
                                 : Container(),
                             Container(
                                 width: 150,
-                                child: Text(threadInfo.name,
+                                child: Text(threadInfo.name??'',
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: Theme.of(context).primaryColor,
@@ -59,16 +59,25 @@ class ThreadAuthorRow extends StatelessWidget {
                               margin: EdgeInsets.only(top: 2),
                               child: Row(children: <Widget>[
                                 ThreadLabel(
-                                    labelName: threadInfo.area,
+                                    labelName: threadInfo.area??'',
                                     color: Colors.orange),
                                 Container(
                                     margin: EdgeInsets.only(left: 3),
                                     child: ThreadLabel(
-                                        labelName: threadInfo.type,
+                                        labelName: threadInfo.type??'',
                                         color: Colors.green))
                               ]))
                         ],
                       ),
+                      threadInfo.auditStatus!=null?
+                      CustomButton(
+                        text: threadInfo.auditStatus,
+                        widthPx: 140,
+                        heightPx: 55,
+                        fontSizePx: 26,
+                        color:getAuditColor(threadInfo.auditStatus),
+                      )
+                      :
                       CustomButton(
                         text: '电话',
                         widthPx: 120,
@@ -79,5 +88,21 @@ class ThreadAuthorRow extends StatelessWidget {
                     ],
                   )))
         ]);
+  }
+
+  getAuditColor(String auditStatus){
+    switch(auditStatus)
+    {
+      case '已通过':
+      return Colors.green;
+      break;
+      case '审核中':
+      return Color(0xffED414A);
+      break;
+      case '未通过':
+      case '已删除':
+      return Color(0xffED414A);
+      break;
+    }
   }
 }

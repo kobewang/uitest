@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:uitest/dao/threadDao.dart';
 import 'package:uitest/model/threadInfo.dart';
+import 'package:uitest/pages/member/login.dart';
 import 'package:uitest/pages/thread/add.dart';
 import 'package:uitest/pages/thread/report.dart';
 import 'package:uitest/pages/thread/widgets/authorRow.dart';
@@ -61,6 +62,12 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
   
   //拨号点击事件
   _mobileClickEvent() {}
+  //私信点击
+  _messageClickEvent(){
+   Navigator.of(context).push(new MaterialPageRoute(builder:(_){
+     return LoginPage();
+   }));
+  }
   //评论提交
   _commentClickEvent() async {
     if (_commentStr.isEmpty) {
@@ -146,7 +153,7 @@ class ThreadDetailPageState extends State<ThreadDetailPage> {
                   _publishClickEvent();
                 }),
                 bottomMenuItem('私信', 1, () {
-                  print('私信');
+                  _messageClickEvent();
                 }),
                 bottomMenuItem('一键拨号', 2, () {
                   loadData();

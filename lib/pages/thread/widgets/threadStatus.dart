@@ -14,10 +14,11 @@ class ThreadStatus extends StatefulWidget {
   dynamic threadInfo;
   double rightEdge;
   var isLike = false;
-
-  ///是否列表用
-  bool isList;
-  ThreadStatus({Key key, this.threadInfo, this.rightEdge, this.isList})
+  var isMy = false; //我的列表
+  bool isList; //是否列表用
+  VoidCallback deleteCallBack;//删除回调
+  ThreadStatus(
+      {Key key, this.threadInfo, this.rightEdge, this.isList, this.isMy,this.deleteCallBack})
       : super(key: key);
   @override
   createState() => ThreadStatusState();
@@ -25,18 +26,35 @@ class ThreadStatus extends StatefulWidget {
 
 class ThreadStatusState extends State<ThreadStatus> {
   //点赞事件
-  _likeClick()  async{
+  _likeClick() async {
     MyDialog.showLoading(context, '提交中..');
-    var res= await ThreadDao.like(widget.threadInfo.id,widget.threadInfo.isLike == 0?true:false);
-    if(res!=null) {
+    var res = await ThreadDao.like(
+        widget.threadInfo.id, widget.threadInfo.isLike == 0 ? true : false);
+    if (res != null) {
       Navigator.of(context).pop();
-       setState(() {
-         var oldIsLike=widget.threadInfo.isLike;
-        widget.threadInfo.isLike = oldIsLike == 0?1:0;
-        widget.threadInfo.likes = oldIsLike == 0?widget.threadInfo.likes + 1:widget.threadInfo.likes - 1;
+      setState(() {
+        var oldIsLike = widget.threadInfo.isLike;
+        widget.threadInfo.isLike = oldIsLike == 0 ? 1 : 0;
+        widget.threadInfo.likes = oldIsLike == 0
+            ? widget.threadInfo.likes + 1
+            : widget.threadInfo.likes - 1;
       });
     }
-    
+  }
+
+  ///删除帖子
+  _deleteClick() async {
+    MyDialog.showLoading(context, '提交中..');
+    var res = await ThreadDao.finish(widget.threadInfo.id);
+    if (res != null) {
+      Navigator.of(context).pop();
+      if (res.data['Code'] == 0) {
+        MyDialog.showToast('删除成功');
+        widget.deleteCallBack();
+      } else {
+        MyDialog.showAlert(context, res.data['Header']['ErrorMessage']);
+      }
+    }
   }
 
   @override
@@ -76,62 +94,70 @@ class ThreadStatusState extends State<ThreadStatus> {
               : BoxDecoration(),
           height: 25.0,
           width: MediaQuery.of(context).size.width,
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(children: <Widget>[
-                  Container(
-                      margin: EdgeInsets.only(left: 0, right: 5),
-                      child: Icon(
-                        Icons.remove_red_eye,
-                        color: Colors.grey,
-                        size: 15,
-                      )),
-                  Text(widget.threadInfo.views.toString(),
-                      style: TextStyle(
-                          fontSize: fontSize,
-                          color: Theme.of(context).primaryColor)),
-                  Text('人浏览',
-                      style: TextStyle(
-                          fontSize: fontSize, color: Color(0xFF666666))),
-                  GestureDetector(
-                      onTap: () {
-                        _likeClick();
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(left: 10, right: 5),
-                        child: Icon(
-                          Icons.thumb_up,
-                          color: widget.threadInfo.isLike == 1
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey,
-                          size: 15,
-                        ),
-                      )),
-                  Text(widget.threadInfo.likes.toString(),
-                      style: TextStyle(
-                          fontSize: fontSize,
-                          color: Theme.of(context).primaryColor)),
-                  Text('人点赞',
-                      style: TextStyle(
-                          fontSize: fontSize, color: Color(0xFF666666))),
-                ]),
-                widget.isList
-                    ? GestureDetector(
-                        onTap: () {
-                          Navigator.of(context)
-                              .push(new MaterialPageRoute(builder: (contexzt) {
-                            return ThreadDetailPage(tid: widget.threadInfo.id);
-                          }));
-                        },
-                        child: Container(
-                            margin: EdgeInsets.only(right: 10),
-                            child: Text('立即查看>>',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: fontSize))))
-                    : ThreadTime(addtime: widget.threadInfo.addtime)
-              ]),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
+                  Widget>[
+            Row(children: <Widget>[
+              Container(
+                  margin: EdgeInsets.only(left: 0, right: 5),
+                  child: Icon(
+                    Icons.remove_red_eye,
+                    color: Colors.grey,
+                    size: 15,
+                  )),
+              Text(widget.threadInfo.views.toString(),
+                  style: TextStyle(
+                      fontSize: fontSize,
+                      color: Theme.of(context).primaryColor)),
+              Text('人浏览',
+                  style:
+                      TextStyle(fontSize: fontSize, color: Color(0xFF666666))),
+              GestureDetector(
+                  onTap: () {
+                    _likeClick();
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: 10, right: 5),
+                    child: Icon(
+                      Icons.thumb_up,
+                      color: widget.threadInfo.isLike == 1
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey,
+                      size: 15,
+                    ),
+                  )),
+              Text(widget.threadInfo.likes.toString(),
+                  style: TextStyle(
+                      fontSize: fontSize,
+                      color: Theme.of(context).primaryColor)),
+              Text('人点赞',
+                  style:
+                      TextStyle(fontSize: fontSize, color: Color(0xFF666666))),
+            ]),
+            widget.isList
+                ? GestureDetector(
+                    onTap: () {
+                      if (widget.isMy) {
+                        MyDialog.showAlert(context, '确认删除这条信息吗？', ok: () {
+                          _deleteClick();
+                        }, cancel: () {});
+                      } else {
+                        Navigator.of(context)
+                            .push(new MaterialPageRoute(builder: (contexzt) {
+                          return ThreadDetailPage(tid: widget.threadInfo.id);
+                        }));
+                      }
+                    },
+                    child: Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child:
+                        widget.threadInfo.auditStatus=='已删除'?Container():
+                         Text(widget.isMy ? '我要删除>>' : '立即查看>>',
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: fontSize))))
+                : ThreadTime(addtime: widget.threadInfo.addtime)
+          ]),
         )
       ],
     );

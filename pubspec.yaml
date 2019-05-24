@@ -22,7 +22,7 @@ dependencies:
   flutter_swiper: ^1.1.4
   flutter_vertical_marquee: ^0.2.1
   share: ^0.5.3
-  flutter_redux: ^0.5.3
+  flutter_redux: ^0.5.3 #redux
   fluwx: ^0.5.5 #微信
   dio: ^1.0.14 #网络框架
   event_bus: ^1.0.1 #事件订阅

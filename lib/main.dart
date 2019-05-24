@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+import 'package:uitest/pages/member/integral.dart';
+import 'package:uitest/pages/member/profile.dart';
+import 'package:uitest/pages/thread/mylist.dart';
+import 'package:uitest/redux/mainReducer.dart';
 import 'package:uitest/pages/detail.dart';
 import 'package:uitest/pages/home.dart';
 import 'package:uitest/pages/member/login.dart';
@@ -9,6 +15,7 @@ import 'package:uitest/pages/thread/list.dart';
 import 'package:uitest/pages/thread/detail.dart';
 import 'package:uitest/pages/thread/publish.dart';
 import 'package:uitest/pages/typeSearch.dart';
+import 'package:uitest/redux/models/appstate.dart';
 import 'package:uitest/widgets/barOption.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:uitest/pages/types.dart';
@@ -20,7 +27,17 @@ import 'package:uitest/pages/listorder.dart';
 import 'package:uitest/pages/chat.dart';
 import 'package:uitest/pages/webview.dart';
 
-void main() => runApp(MyApp());
+void main(){
+    //状态管理
+  Store<AppState> store =
+      new Store<AppState>(mainReducer, initialState: new AppState());
+  runApp(
+    StoreProvider<AppState>(
+    store:store,
+    child:MyApp()
+    )
+  );
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -28,7 +45,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(        
+      theme: ThemeData(    
+        platform: TargetPlatform.iOS,    
         primarySwatch: Colors.blue,
       ),
       //home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -40,8 +58,10 @@ class MyApp extends StatelessWidget {
       //home:ThreadList(),
       //home:ThreadPublishPage(typeId:2,typeName:'成衣供求'),
       //home:ThreadAddPage(),
-      //home:UserPage(),
-      home:LoginPage(),
+      home:UserPage(),
+      //home:LoginPage(),
+      //home:MyThreadList(),
+      //home:ProfilePage(),
       //home:SharePage(),
      // home:WebViewPage(title: '测试',url: 'https://www.22.cn'),
       //home:FatherPage(),

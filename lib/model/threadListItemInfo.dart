@@ -21,6 +21,7 @@ class ThreadListItemInfo {
   String address;
   int isVip;
   int isRed;
+  String auditStatus;
   ThreadListItemInfo(
       {this.id,
       this.userId,
@@ -40,7 +41,8 @@ class ThreadListItemInfo {
       this.picList,
       this.address,
       this.isVip,
-      this.isRed});
+      this.isRed,
+      this.auditStatus});
   factory ThreadListItemInfo.fromJson(Map<String, dynamic> json) {
     return ThreadListItemInfo(
         id: json['Id'],
@@ -65,6 +67,7 @@ class ThreadListItemInfo {
               }).toList(),
         address: json['Address'],
         isVip: json['IsVIP'],
-        isRed: json['IsRed']);
+        isRed: json['IsRed'],
+        auditStatus:json['AuditStatus']??'');
   }
 }
