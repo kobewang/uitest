@@ -79,7 +79,7 @@ class ProfilePageState extends State<ProfilePage> {
                       style: fontStyle1,
                     ),
                   ),
-                  value ?? Container()
+                 Text(value) ?? Container()
                 ],
               ),
             ),
