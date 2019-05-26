@@ -24,73 +24,56 @@ class RefreshList extends StatelessWidget {
     var _controller = controller ?? new RefreshController();
     return SmartRefresher(
       controller: _controller,
-      onRefresh: (up) async {
-        bool completed = true;
-        RefreshStatus mode;
-        if (!up && onPullUp != null) {
-          completed = await onPullUp();
-          mode = completed ? RefreshStatus.completed : RefreshStatus.failed;
+      onLoading: () async {
+        //上拉加载
+        if (onPullUp != null) {
+          await onPullUp();
           if (isNoMore) {
-            _controller?.sendBack(false, RefreshStatus.idle);
+            _controller.loadNoData();
+            return;
           }
         }
-         if (up && onPullDown != null) {
-          //print("onPullDown");
-          completed = await onPullDown();
-          mode = completed ? RefreshStatus.completed : RefreshStatus.failed;
-          if (isNoMore) {
-            _controller?.sendBack(false, RefreshStatus.idle);
+        _controller?.loadComplete();
+      },
+      onRefresh: () async {
+          if (onPullDown != null) {
+          bool completed = await onPullDown();
+          if (!completed) {
+            _controller?.refreshFailed();
+            return;
           }
         }
-        _controller?.sendBack(up, mode);
+        _controller?.refreshCompleted();
       },
       enablePullDown: onPullDown != null,
       enablePullUp: onPullUp != null,
-      headerConfig: RefreshConfig(),
-      headerBuilder: (context, mode) {
-        return ClassicIndicator(
-          idleIcon: Icon(
+      header: ClassicHeader(
+        refreshingText: "加载中...",
+        releaseText: "释放加载",
+        completeText: "加载完成",
+        idleText: "下拉加载",
+        failedText: "加载失败",
+        refreshingIcon: CupertinoActivityIndicator(),
+        completeIcon: Icon(Icons.arrow_upward),
+        releaseIcon: Icon(Icons.arrow_upward),
+        idleIcon: Icon(
             Icons.arrow_downward,
             color: Colors.grey,
           ),
-          releaseIcon: Icon(
-            Icons.arrow_upward,
-            color:Colors.grey
-          ),
-          mode: mode,
-          refreshingText: "正在努力加载..",
-          releaseText: "释放加载更多",
-          completeText: "加载完成",
-          idleText: "上拉加载更多",
-          failedText: "加载失败",
-          refreshingIcon: CupertinoActivityIndicator(),
-          noDataText: '我是有底线的',
-          noMoreIcon: Container(),
-        );
-      },
-      footerConfig: RefreshConfig(),
-      footerBuilder: (context,mode){
-         return ClassicIndicator(
-          idleIcon: Icon(
-            Icons.arrow_upward,
-            color: Colors.grey,
-          ),
-          releaseIcon: Icon(
-            Icons.arrow_downward,
-            color: Colors.grey,
-          ),
-          mode: mode,
-          refreshingText: "正在努力加载...",
-          releaseText: "释放加载更多",
-          completeText: "加载完成",
-          idleText: "上拉加载更多",
-          failedText: "加载失败",
-          refreshingIcon: CupertinoActivityIndicator(),
-          noDataText: '我是有底线的',
-          noMoreIcon: Container(),
-        );
-      },
+      ),
+      footer: ClassicFooter(
+        idleIcon: Icon(
+          Icons.arrow_upward,
+          color: Colors.grey,
+        ),
+        loadingText: "正在努力加载...",
+        idleText: "上拉加载更多",
+        loadingIcon: CupertinoActivityIndicator(),
+        noDataText: '我是有底线的',
+        noMoreIcon: Container(),
+      ),
       child: scrollViewChild,
-    );
+    )
+      ;
   }
 }

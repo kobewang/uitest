@@ -5,7 +5,7 @@ import 'package:fluwx/fluwx.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_qq_bridge/flutter_qq_bridge.dart';
+//import 'package:flutter_qq_bridge/flutter_qq_bridge.dart';
 
 /// auth:wyj
 /// desc:分享页测试
@@ -22,7 +22,7 @@ class SharePageState extends State<SharePage> {
     registerQQ();  
   }
   registerQQ() async {
-    await FlutterQqBridge.registerQq('androidAppId', 'iOSAppId');
+    //await FlutterQqBridge.registerQq('androidAppId', 'iOSAppId');
   }
 
 
