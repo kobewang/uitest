@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:uitest/config/constants.dart';
+import 'package:uitest/config/localStorage.dart';
 import 'package:uitest/dao/DataResult.dart';
 import 'package:uitest/model/addThreadInfo.dart';
 import 'package:uitest/model/reportInfo.dart';
@@ -13,9 +14,6 @@ import 'package:image_jpeg/image_jpeg.dart';
 ///
 /// auth:wyj date:20190326
 class ThreadDao {
-  static String token =
-      '021d286691e3e78922b8d06a7e92e9927dd446cfd79c91133573dfb068093f09';
-
   /// 菜单
   static menuList() async {
     var res =
@@ -40,6 +38,7 @@ class ThreadDao {
 
   ///发布帖子
   static add(AddThreadInfo addInfo) async {
+    var token = await LocalStorage.getUserToken();
     var params = {
       "userRequest": {
         "Token": token,
@@ -77,6 +76,7 @@ class ThreadDao {
   //上传图片
   static uploadImg(int linkId, int indexNum, File imgFile,
       {String imgType: 'thread'}) async {
+    var token = await LocalStorage.getUserToken();
     File uploadFile = imgFile;
     //图片流
     var fileBytes = imgFile.readAsBytesSync();
@@ -150,6 +150,7 @@ class ThreadDao {
 
   //我的帖子列表
   static myList({int page = 1}) async {
+    var token = await LocalStorage.getUserToken();
     var params = {
       "pageRequest": {
         "LastId": 0,
@@ -200,6 +201,7 @@ class ThreadDao {
 
   ///完成(删除)帖子
   static finish(int threadId) async {
+    var token = await LocalStorage.getUserToken();
     var params = {
       "userRequest": {
         "Token": token,
@@ -220,6 +222,7 @@ class ThreadDao {
 
   /// 发布评论
   static addComment(int threadId, String comment) async {
+    var token = await LocalStorage.getUserToken();
     var params = {
       "userRequest": {
         "Token": token,
@@ -269,6 +272,7 @@ class ThreadDao {
 
   ///点赞
   static like(int threadId, bool isLike) async {
+    var token = await LocalStorage.getUserToken();
     var params = {
       "userRequest": {
         "Token": token,
@@ -292,6 +296,7 @@ class ThreadDao {
 
   ///举报
   static report(ReportInfo reportInfo) async {
+    var token = await LocalStorage.getUserToken();
     var params = {
       "userRequest": {
         "Token": token,

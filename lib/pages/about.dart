@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uitest/config/constants.dart';
 import 'package:uitest/dao/commonDao.dart';
+import 'package:uitest/pages/layout/titleLayout.dart';
 import 'package:uitest/utils/myDialog.dart';
 import 'package:uitest/utils/utils.dart';
 import 'package:uitest/widgets/listItem.dart';
@@ -17,36 +18,35 @@ class AboutPage extends StatefulWidget {
   @override
   createState() => AboutPageState();
 }
+
 class AboutPageState extends State<AboutPage> {
   Future<void> onRefresh() async {
-    if(Platform.isIOS)
-     return;
-     var res= await CommonDao.appVersion();
-     if(res!=null) {
-       var curCode = int.parse(res.data['Data']['Android']['Vcode']);
-       if(curCode>Constants.APP_VERSION_ANDROID_CODE) {
-         MyDialog.showAlert(
-           context,
+    if (Platform.isIOS) return;
+    var res = await CommonDao.appVersion();
+    if (res != null) {
+      var curCode = int.parse(res.data['Data']['Android']['Vcode']);
+      if (curCode > Constants.APP_VERSION_ANDROID_CODE) {
+        MyDialog.showAlert(
+          context,
           '',
-          ok: (){
+          ok: () {
             launch(res.data['Data']['Android']['DownUrl']);
           },
-          okLabel:'立即下载更新',
-          cancel:(){
-
-          },
-          cancelLabel:'暂不更新',
+          okLabel: '立即下载更新',
+          cancel: () {},
+          cancelLabel: '暂不更新',
           barrierDismissible: false,
-         );
-       } else {
-         MyDialog.showToast('当前已是最新版本');
-       }
-     }
+        );
+      } else {
+        MyDialog.showToast('当前已是最新版本');
+      }
+    }
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text('关于我们'), centerTitle: true, elevation: 1),
+    return TitleLayout(
+        title: '关于我们',
         body: RefreshIndicator(
             onRefresh: onRefresh,
             child: Container(
@@ -81,7 +81,7 @@ class AboutPageState extends State<AboutPage> {
           child: Column(
         children: <Widget>[
           Image.network(Constants.APP_LOGO),
-          Container(margin: EdgeInsets.only(top: 20), child: Text('微毛衫'))
+          Container(margin: EdgeInsets.only(top: 20), child: Text(Constants.COMPANY_NAME))
         ],
       )),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:uitest/config/constants.dart';
 import 'package:uitest/model/userInfo.dart';
 import 'package:uitest/pages/layout/titleLayout.dart';
 import 'package:uitest/pages/thread/widgets/customlistItem.dart';
@@ -25,19 +26,25 @@ class ProfilePageState extends State<ProfilePage> {
           return TitleLayout(
             title: '设置',
             body: ListView(children: <Widget>[
-              listItem('images/my_set_name.png', '昵称', userInfo?.name ?? '',
-                  true, isRightArrow:true,bottomDivider:true),
-              listItem('images/my_set_grade.png', '等级', userInfo?.grade ?? '',
-                  true, isRightArrow:true,bottomDivider:true),
+              listItem(
+                  'images/my_set_name.png', '昵称', userInfo?.name ?? '', true,
+                  isRightArrow: true, bottomDivider: true),
+              listItem(
+                  'images/my_set_grade.png', '等级', userInfo?.grade ?? '', true,
+                  isRightArrow: true, bottomDivider: true),
               listItem('images/my_set_head.png', '头像', userInfo?.headImg ?? '',
-                  false, isRightArrow:true,bottomDivider:true),
+                  false,
+                  isRightArrow: true, bottomDivider: true),
               listItem('images/my_set_mobile.png', '手机', userInfo?.mobile ?? '',
-                  true,  isRightArrow:true,bottomDivider:true),
+                  true,
+                  isRightArrow: true, bottomDivider: true),
               //listItem('images/my_set_truecard.png','实名',userInfo?.??'',true,false),
-              listItem('images/my_set_city.png', '省市', userInfo?.mobile ?? '',
-                  true,  isRightArrow:true,bottomDivider:true),
-              listItem('images/my_set_addr.png', '地址', userInfo?.address ?? '',
-                  true, isRightArrow:true,bottomDivider:true),
+              listItem('images/my_set_city.png', '省市',
+                  "${userInfo?.province ?? ''}-${userInfo?.city ?? ''}", true,
+                  isRightArrow: true, bottomDivider: true),
+              listItem(
+                  'images/my_set_addr.png', '地址', userInfo?.address ?? '', true,
+                  isRightArrow: true, bottomDivider: true),
             ]),
           );
         },
@@ -47,14 +54,9 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   ///list-item
-  listItem(
-      String imgIcon,
-      String title,
-      String value,
-      bool isTextWiget,
-      {
-      bool isRightArrow=true,
-      bool bottomDivider=true,
+  listItem(String imgIcon, String title, String value, bool isTextWiget,
+      {bool isRightArrow = true,
+      bool bottomDivider = true,
       ValueChanged<Store<AppState>> onPressed}) {
     return StoreConnector<AppState, Store<AppState>>(
         builder: (context, store) {
@@ -64,7 +66,10 @@ class ProfilePageState extends State<ProfilePage> {
             height: Utils.getPXSize(context, 100),
             icon: Container(
               width: Utils.getPXSize(context, 40),
-              child: Image.asset(imgIcon),
+              child: Image.asset(
+                imgIcon,
+                color: Color(0xff999999),
+              ),
             ),
             child: Container(
               margin: EdgeInsets.only(
@@ -72,14 +77,28 @@ class ProfilePageState extends State<ProfilePage> {
                 right: Utils.getPXSize(context, 16),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: fontStyle1,
-                    ),
-                  ),
-                 Text(value) ?? Container()
+                  Container(
+                      width: 50,
+                      child: Text(
+                        title,
+                        style: fontStyle1,
+                      )),
+                  //width:50,
+                  isTextWiget
+                      ? Container(
+                          width: 200,
+                          child: Text(value,
+                              // overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: Color(0xff999999),
+                                  fontSize: Utils.getPXSize(context, 30))))
+                      : CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            value ?? Constants.DEFAULT_HEAD_IMG,
+                          ),
+                        )
                 ],
               ),
             ),

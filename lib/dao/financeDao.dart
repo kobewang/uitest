@@ -1,4 +1,5 @@
 import 'package:uitest/config/constants.dart';
+import 'package:uitest/config/localStorage.dart';
 import 'package:uitest/dao/DataResult.dart';
 import 'package:uitest/net/api.dart';
 
@@ -6,9 +7,8 @@ import 'package:uitest/net/api.dart';
 /// desc:财务dao
 /// date:20190524
 class FinanceDao {
-  static String token =
-      '021d286691e3e78922b8d06a7e92e9927dd446cfd79c91133573dfb068093f09';
   static list({int page}) async {
+    var token=await LocalStorage.getUserToken();
     var params = {
       "pageRequest": {
         "LastId": 0,

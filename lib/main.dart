@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:uitest/pages/company/list.dart';
 import 'package:uitest/pages/member/integral.dart';
 import 'package:uitest/pages/member/profile.dart';
 import 'package:uitest/pages/thread/mylist.dart';
@@ -37,6 +41,11 @@ void main(){
     child:MyApp()
     )
   );
+  if(Platform.isAndroid) {
+    // 以下两行 设置android状态栏为透明的沉浸。写在组件渲染之后，是为了在渲染后进行set赋值，覆盖状态栏，写在渲染之前MaterialApp组件会覆盖掉这个值。
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -58,7 +67,8 @@ class MyApp extends StatelessWidget {
       //home:ThreadList(),
       //home:ThreadPublishPage(typeId:2,typeName:'成衣供求'),
       //home:ThreadAddPage(),
-      home:UserPage(),
+      //home:UserPage(),
+      home:CompanyListPage(),
       //home:LoginPage(),
       //home:MyThreadList(),
       //home:ProfilePage(),

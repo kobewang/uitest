@@ -1,7 +1,7 @@
 class Constants {
   static final String TYPE_SEARCH_HISTORY = 'type_search_history';
   static const int PAGE_SIZE = 20; //默认分页
-  static const int PLATID = 2; //平台
+  static const int PLATID = 3; //jbiao平台 2:vmsapp
   static const String URL_PUBLISH_RULE='https://www.www.cn'; //发布协议
   static const String DEFAULT_HEAD_IMG="https://img.yms.cn/upload/head/ic_avatar_default.png";//默认头像
   static const String APP_LOGO='https://img.yms.cn/upload/public/vmslogo.png'; //APPlogo

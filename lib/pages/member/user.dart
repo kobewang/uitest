@@ -148,19 +148,27 @@ class UserPageState extends State<UserPage> {
       padding: EdgeInsets.all(10),
       child: Column(children: <Widget>[
         //行-设置
+    
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(),
             Container(
                 margin: EdgeInsets.only(right: 10),
-                child: Icon(
+                height: 20,
+                child:
+                Container()
+            )
+                /*
+                 Icon(
                   Icons.settings,
                   color: Colors.white,
                   size: 20,
                 )),
+                */
           ],
         ),
+        
         //行-头像
         Row(
           children: <Widget>[
