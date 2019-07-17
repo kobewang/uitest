@@ -36,6 +36,8 @@ class  HttpManager {
   static final String API_USER_GET_VCODE = API_HOST+'/user/getmcode';
   static final String API_USER_BIND_MOBILE = API_HOST + '/user/mobilebind';
   static final String API_USER_GET_INFO = API_HOST + '/user/info';
+  ///名片相关
+  static final String API_COMPANY_LIST= API_HOST+'/card/list'; 
 
 
   static netPost(url,params,Map<String,String> header, Options option,{noTip = false}) async {
@@ -58,7 +60,7 @@ class  HttpManager {
     try {
       response = await dio.post(url, data:params, options:option);
     } on DioError catch (e) {
-      print('${e.response}');
+      print('DioError:${e.response}');
       Response errorResponse;
       if (e.response != null) {
         errorResponse = e.response;

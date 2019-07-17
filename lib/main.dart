@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:uitest/pages/company/detail.dart';
+import 'package:uitest/pages/company/intro.dart';
 import 'package:uitest/pages/company/list.dart';
 import 'package:uitest/pages/member/integral.dart';
 import 'package:uitest/pages/member/profile.dart';
@@ -68,7 +70,8 @@ class MyApp extends StatelessWidget {
       //home:ThreadPublishPage(typeId:2,typeName:'成衣供求'),
       //home:ThreadAddPage(),
       //home:UserPage(),
-      home:CompanyListPage(),
+      //home:CompanyListPage(),
+      home:CompanyIntro(),
       //home:LoginPage(),
       //home:MyThreadList(),
       //home:ProfilePage(),
